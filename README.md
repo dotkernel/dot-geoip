@@ -1,5 +1,5 @@
 # dot-geoip
-DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmind/GeoIP2-php) package, using [MaxMind's free GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) to provide details about an IP address.
+DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmind/GeoIP2-php) package, using their [free GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) to provide geographical details about an IP address.
 
 
 ## Install
@@ -21,6 +21,10 @@ Once you have DotConsole in your application, continue setting up DotGeoip:
 * copy the command from `config/autoload/console.global.php` to your application's `config/autoload/console.global.php`
 * copy `config/autoload/geoip.global.php` to your application's `config/autoload/geoip.global.php`
 * copy `data/geoip` to your application's `data` directory - this is where the database file(s) will be downloaded.
+
+After this, running `php bin/console.php geoip:synchronize --database=<database>` from a console will download the latest copy of MaxMind's GeoLite2 database file for the specified database(s).
+Replace `<database>` with one of the following string: `asn`, `city`, `country` to download a specific database file OR with `all` to download all three database files at once.
+You can get help for this command by running `php bin/console.php geoip:synchronize --help`.
 
 
 ### Step 2: Include `Dot\GeoIP\Service\LocationService` in your code

@@ -1,9 +1,8 @@
 {
     "name": "dotkernel/dot-geoip",
-    "description": "DotKernel component providing details about an IP address.",
+    "description": "DotKernel component based on Maxmind's geoip2/geoip2 package, using their free GeoLite2 databases to provide geographical details about an IP address.",
     "type": "library",
     "license": "MIT",
-    "version": "dev-master",
     "authors": [
         {
             "name": "DotKernel Team",
