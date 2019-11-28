@@ -1,0 +1,26 @@
+{
+    "name": "dotkernel/dot-geoip",
+    "description": "DotKernel component providing details about an IP address.",
+    "type": "library",
+    "license": "MIT",
+    "version": "dev-master",
+    "authors": [
+        {
+            "name": "DotKernel Team",
+            "email": "team@dotkernel.com"
+        }
+    ],
+    "require": {
+        "geoip2/geoip2": "^2.9",
+        "psr/container": "^1.0",
+        "dotkernel/dot-console": "^0.1.1",
+        "guzzlehttp/guzzle": "^6.4",
+        "symfony/filesystem": "^5.0",
+        "zendframework/zend-text": "^2.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dot\\GeoIP\\": "src/"
+        }
+    }
+}
