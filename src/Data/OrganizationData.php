@@ -19,9 +19,9 @@ class OrganizationData implements ArraySerializableInterface
     protected $name;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getAsn(): int
+    public function getAsn(): ?int
     {
         return $this->asn;
     }
@@ -38,9 +38,9 @@ class OrganizationData implements ArraySerializableInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }

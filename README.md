@@ -39,9 +39,6 @@ namespace Api\Example\Service;
 
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Data\LocationData;
-use Exception;
-use GeoIp2\Exception\AddressNotFoundException;
-use MaxMind\Db\Reader\InvalidDatabaseException;
 
 /**
  * Class MyService
@@ -63,68 +60,26 @@ class MyService
 
     /**
      * @param string $ipAddress
-     * @return LocationData
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
      */
-    public function myMethod(string $ipAddress): LocationData
+    public function myMethod(string $ipAddress)
     {
-        return $this->locationService->getDetails($ipAddress);
+        try {
+            // You can use any of the below methods:
+            
+            // Get CountryData which includes isEuMember, isoCode and name
+            return $this->locationService->getCountry($ipAddress);
+            
+            // Get ContinentData which includes code and name
+            return $this->locationService->getContinent($ipAddress);
+            
+            // Get OrganizationData which includes asn and name
+            return $this->locationService->getOrganization($ipAddress);
+
+            // Get LocationData which includes all of the above + estimated coordinates + timezone
+            return $this->locationService->getLocation($ipAddress);
+        } catch (\Exception $exception) {
+            // handle errors
+        }
     }
 }
-```
-
-
-Because `GeoIp2\Database\Reader` throws exceptions if a database file is not found or if it is corrupted, you need to wrap the below call in a try-catch statement.
-When called with an `$ipAddress = '8.8.8.8'`, `myMethod($ipAddress)` returns an object with the following structure:
-
-```php
-Dot\GeoIP\Data\LocationData::__set_state(array(
-    'continent' =>
-      Dot\GeoIP\Data\ContinentData::__set_state(array(
-        'code' => 'NA',
-        'name' => 'North America'
-    )),
-    'country' =>
-      Dot\GeoIP\Data\CountryData::__set_state(array(
-        'isEuMember' => false,
-        'isoCode' => 'US',
-        'name' => 'United States'
-    )),
-    'latitude' => 37.751,
-    'longitude' => -97.822,
-    'organization' =>
-      Dot\GeoIP\Data\OrganizationData::__set_state(array(
-        'asn' => 15169,
-        'name' => 'Google LLC'
-    )),
-    'timeZone' => 'America/Chicago'
-))
-```
-
-The above call can also be chained as `myMethod($ipAddress)->getArrayCopy()`, to retrieve the details as an array:
-
-```php
-array (
-    'continent' =>
-      array (
-        'code' => 'NA',
-        'name' => 'North America'
-    ),
-    'country' =>
-      array (
-        'isEuMember' => false,
-        'isoCode' => 'US',
-        'name' => 'United States'
-    ),
-    'latitude' => 37.751,
-    'longitude' => -97.822,
-    'organization' =>
-      array (
-        'asn' => 15169,
-        'name' => 'Google LLC'
-    ),
-    'timeZone' => 'America/Chicago'
-)
 ```

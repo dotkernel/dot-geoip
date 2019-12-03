@@ -15,6 +15,7 @@ use MaxMind\Db\Reader\Metadata;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 
 use function explode;
+use function file_exists;
 use function filter_var;
 use function implode;
 
@@ -55,6 +56,45 @@ class LocationService implements LocationServiceInterface
         $path = $this->getDatabasePath($database);
 
         return file_exists($path);
+    }
+
+    /**
+     * @param string $ipAddress
+     * @return ContinentData
+     * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
+     */
+    public function getContinent(string $ipAddress): ContinentData
+    {
+        $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
+        $data = $reader->country($this->obfuscateIpAddress($ipAddress));
+
+        $continent = new ContinentData();
+        $continent->setCode($data->continent->code)->setName($data->continent->name);
+
+        return $continent;
+    }
+
+    /**
+     * @param string $ipAddress
+     * @return CountryData
+     * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
+     */
+    public function getCountry(string $ipAddress): CountryData
+    {
+        $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
+        $data = $reader->country($this->obfuscateIpAddress($ipAddress));
+
+        $country = new CountryData();
+        $country
+            ->setIsEuMember($data->country->isInEuropeanUnion)
+            ->setIsoCode($data->country->isoCode)
+            ->setName($data->country->name);
+
+        return $country;
     }
 
     /**
@@ -100,7 +140,7 @@ class LocationService implements LocationServiceInterface
      * @throws AddressNotFoundException
      * @throws InvalidDatabaseException
      */
-    public function getDetails(string $ipAddress): LocationData
+    public function getLocation(string $ipAddress): LocationData
     {
         $ipAddress = $this->obfuscateIpAddress($ipAddress);
 
@@ -136,10 +176,28 @@ class LocationService implements LocationServiceInterface
 
     /**
      * @param string $ipAddress
+     * @return OrganizationData
+     * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
+     */
+    public function getOrganization(string $ipAddress): OrganizationData
+    {
+        $reader = $this->getDatabaseReader(self::DATABASE_ASN);
+        $data = $reader->asn($this->obfuscateIpAddress($ipAddress));
+
+        $organization = new OrganizationData();
+        $organization->setAsn($data->autonomousSystemNumber)->setName($data->autonomousSystemOrganization);
+
+        return $organization;
+    }
+
+    /**
+     * @param string $ipAddress
      * @return string
      * @throws Exception
      */
-    private function obfuscateIpAddress(string $ipAddress): string
+    public function obfuscateIpAddress(string $ipAddress): string
     {
         if (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $bytes = explode('.', $ipAddress);

@@ -19,9 +19,9 @@ class ContinentData implements ArraySerializableInterface
     protected $name;
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -38,9 +38,9 @@ class ContinentData implements ArraySerializableInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }

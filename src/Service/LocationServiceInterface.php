@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Service;
 
+use Dot\GeoIP\Data\ContinentData;
+use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
+use Dot\GeoIP\Data\OrganizationData;
+use Exception;
 use GeoIp2\Database\Reader;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
@@ -20,6 +24,20 @@ interface LocationServiceInterface
      * @return bool
      */
     public function databaseExists(string $database): bool;
+
+    /**
+     * @param string $ipAddress
+     * @return ContinentData
+     * @throws Exception
+     */
+    public function getContinent(string $ipAddress): ContinentData;
+
+    /**
+     * @param string $ipAddress
+     * @return CountryData
+     * @throws Exception
+     */
+    public function getCountry(string $ipAddress): CountryData;
 
     /**
      * @param string $database
@@ -44,5 +62,19 @@ interface LocationServiceInterface
      * @param string $ipAddress
      * @return LocationData
      */
-    public function getDetails(string $ipAddress): LocationData;
+    public function getLocation(string $ipAddress): LocationData;
+
+    /**
+     * @param string $ipAddress
+     * @return OrganizationData
+     * @throws Exception
+     */
+    public function getOrganization(string $ipAddress): OrganizationData;
+
+    /**
+     * @param string $ipAddress
+     * @return string
+     * @throws Exception
+     */
+    public function obfuscateIpAddress(string $ipAddress): string;
 }

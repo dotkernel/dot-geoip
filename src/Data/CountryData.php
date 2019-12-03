@@ -22,9 +22,9 @@ class CountryData implements ArraySerializableInterface
     protected $name;
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isEuMember(): bool
+    public function isEuMember(): ?bool
     {
         return $this->isEuMember;
     }
@@ -41,9 +41,9 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getIsoCode(): string
+    public function getIsoCode(): ?string
     {
         return $this->isoCode;
     }
@@ -60,9 +60,9 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
