@@ -13,9 +13,9 @@ use GuzzleHttp\RequestOptions;
 use MaxMind\Db\Reader\Metadata;
 use PharData;
 use Symfony\Component\Filesystem\Filesystem;
-use Zend\Console\Adapter\AdapterInterface;
-use Zend\Text\Table\Row;
-use Zend\Text\Table\Table;
+use Laminas\Console\Adapter\AdapterInterface;
+use Laminas\Text\Table\Row;
+use Laminas\Text\Table\Table;
 use ZF\Console\Route;
 
 use function array_key_exists;

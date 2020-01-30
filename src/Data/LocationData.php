@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Data;
 
-use Zend\Stdlib\ArraySerializableInterface;
+use Laminas\Stdlib\ArraySerializableInterface;
 
 /**
  * Class LocationData
