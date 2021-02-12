@@ -1,6 +1,9 @@
 # dot-geoip
 DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmind/GeoIP2-php) package, using their [free GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) to provide geographical details about an IP address.
 
+![OSS Lifecycle](https://img.shields.io/osslifecycle/dotkernel/dot-geoip)
+[![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.0/LICENSE.md)
+
 
 ## Install
 
