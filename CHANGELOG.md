@@ -1,3 +1,20 @@
+## 3.0.1 - 2021-02-15
+
+### Changed
+Nothing
+
+### Added
+* Nothing
+
+### Deprecated
+* Nothing
+
+### Removed
+* Nothing
+
+### Fixed
+* Removed 'ZF\Console\Route' from 'DatabaseHandler' with 'Dot\Console\RouteCollector as Route';
+
 ## 3.0.0 - 2021-02-15
 
 ### Changed
