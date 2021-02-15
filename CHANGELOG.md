@@ -30,7 +30,7 @@ Nothing
 * laminas/laminas-dependency-plugin version 1
 
 ### Removed
-* Support
+* Nothing
 
 ### Fixed
 * require-dev compatibility with Composer 2
