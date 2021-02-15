@@ -3,6 +3,12 @@
     "description": "DotKernel component based on Maxmind's geoip2/geoip2 package, using their free GeoLite2 databases to provide geographical details about an IP address.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "geoip",
+        "dotkernel",
+        "laminas",
+        "mezzio"
+    ],
     "authors": [
         {
             "name": "DotKernel Team",
@@ -10,13 +16,18 @@
         }
     ],
     "require": {
-        "geoip2/geoip2": "^2.9",
+        "php": "^7.4",
+        "geoip2/geoip2": "^2.11",
         "psr/container": "^1.0",
-        "dotkernel/dot-console": "^2.0",
-        "guzzlehttp/guzzle": "^6.4",
-        "symfony/filesystem": "^5.0",
-        "laminas/laminas-text": "^2.7",
-        "laminas/laminas-dependency-plugin": "^1.0"
+        "dotkernel/dot-console": "^3.2",
+        "guzzlehttp/guzzle": "^7.2.0",
+        "symfony/filesystem": "^5.2.3",
+        "laminas/laminas-text": "^2.8"
+    },
+    "require-dev": {
+        "laminas/laminas-dependency-plugin": "^2.1",
+        "squizlabs/php_codesniffer": "^3.5",
+        "phpunit/phpunit": "^9.1"
     },
     "autoload": {
         "psr-4": {
