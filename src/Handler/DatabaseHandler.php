@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Laminas\Console\Adapter\AdapterInterface;
 use Laminas\Text\Table\Row;
 use Laminas\Text\Table\Table;
-use ZF\Console\Route;
+use Dot\Console\RouteCollector as Route;
 
 use function array_key_exists;
 use function basename;
