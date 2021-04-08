@@ -7,7 +7,7 @@ DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmin
 
 ## Install
 
-You can install this library by running the following command:
+You can install this library by running the following command :
 ```bash
 $ composer require dotkernel/dot-geoip
 ```
