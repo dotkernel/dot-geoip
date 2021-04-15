@@ -27,10 +27,10 @@ class ContinentData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $code
-     * @return ContinentData
+     * @param string|null $code
+     * @return $this
      */
-    public function setCode(string $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
@@ -46,10 +46,10 @@ class ContinentData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $name
-     * @return ContinentData
+     * @param string|null $name
+     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 

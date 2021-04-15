@@ -30,10 +30,10 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @param bool $isEuMember
-     * @return CountryData
+     * @param bool|null $isEuMember
+     * @return $this
      */
-    public function setIsEuMember(bool $isEuMember): self
+    public function setIsEuMember(?bool $isEuMember): self
     {
         $this->isEuMember = $isEuMember;
 
@@ -49,10 +49,10 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $isoCode
-     * @return CountryData
+     * @param string|null $isoCode
+     * @return $this
      */
-    public function setIsoCode(string $isoCode): self
+    public function setIsoCode(?string $isoCode): self
     {
         $this->isoCode = $isoCode;
 
@@ -68,10 +68,10 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $name
-     * @return CountryData
+     * @param string|null $name
+     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
