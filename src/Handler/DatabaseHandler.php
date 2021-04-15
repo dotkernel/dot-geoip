@@ -10,15 +10,12 @@ use Dot\GeoIP\Service\LocationServiceInterface;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Laminas\Filter\Decompress;
 use MaxMind\Db\Reader\Metadata;
-use PharData;
 use Symfony\Component\Filesystem\Filesystem;
 use Laminas\Console\Adapter\AdapterInterface;
-use Laminas\Text\Table\Row;
-use Laminas\Text\Table\Table;
 use Dot\Console\RouteCollector as Route;
 
-use function array_key_exists;
 use function basename;
 use function date;
 use function implode;
@@ -30,11 +27,9 @@ use function sprintf;
  */
 class DatabaseHandler extends AbstractCommand
 {
-    /** @var array $config */
-    protected $config;
+    protected array $config;
 
-    /** @var LocationServiceInterface $locationService */
-    protected $locationService;
+    protected LocationServiceInterface $locationService;
 
     /**
      * DatabaseHandler constructor.
@@ -50,102 +45,134 @@ class DatabaseHandler extends AbstractCommand
     /**
      * @param Route $route
      * @param AdapterInterface $console
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \MaxMind\Db\Reader\InvalidDatabaseException
      */
     public function __invoke(Route $route, AdapterInterface $console)
     {
         if (empty($this->config)) {
-            exit('Unable to proceed because config data is missing.');
+            throw new Exception('Unable to proceed because config data is missing.');
         }
 
-        $table = new Table(['columnWidths' => [23, 21, 21, 100]]);
-        $table->setAutoSeparate(Table::AUTO_SEPARATE_HEADER);
-        $table->setPadding(1);
-        $table->appendRow(['Database', 'Previous build', 'Current build', 'Info']);
+        $quiet = $route->getMatchedParam('quiet') || $route->getMatchedParam('q');
 
+        $fileSystem = new Filesystem();
+        if (!$fileSystem->exists($this->config['targetDir'])) {
+            $fileSystem->mkdir($this->config['targetDir']);
+        }
+
+        $results = [];
         $databases = $this->identifyDatabases($route->getMatchedParam('database'));
         foreach ($databases as $database) {
-            $row = new Row();
-            $row->createColumn(LocationService::DATABASES[$database]);
+            $sourcePath = $this->getSourcePath($database);
+            $targetPath = $this->getTargetPath($database);
+
+            $results[$database] = [
+                'database' => basename($targetPath),
+                'build' => [
+                    'previous' => null,
+                    'current' => null
+                ]
+            ];
 
             $oldMetadata = $this->locationService->getDatabaseMetadata($database);
             if ($oldMetadata instanceof Metadata) {
-                $row->createColumn(date('Y-m-d H:i:s', $oldMetadata->buildEpoch));
-            } else {
-                $row->createColumn('n/a');
+                $results[$database]['build']['previous'] = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
             }
 
-            try {
-                $localTempDir = $this->config['tempDir'];
-                $localTempFile = $localTempDir . '/' . basename($this->config['databases'][$database]['source']);
+            $client = new Client();
+            $client->get($this->config['databases'][$database]['source'], [RequestOptions::SINK => $sourcePath]);
 
-                $client = new Client();
-                $client->get($this->config['databases'][$database]['source'], [RequestOptions::SINK => $localTempFile]);
+            $extractor = new Decompress();
+            $content = $extractor->getAdapter()->decompress($sourcePath);
+            $fileSystem->remove($targetPath, $content);
+            $fileSystem->dumpFile($targetPath, $content);
+            $fileSystem->remove($sourcePath);
 
-                $phar = new PharData($localTempFile);
-                $phar->extractTo($localTempDir, null, true);
-                $localTempDir .= '/' . $phar->getBasename();
-
-                $fileSystem = new Filesystem();
-                $fileSystem->mirror($localTempDir, $this->config['databases'][$database]['target'], null, [
-                    'override' => true
-                ]);
-                $fileSystem->remove($localTempDir);
-                $fileSystem->remove($localTempFile);
-
-                $newMetadata = $this->locationService->getDatabaseMetadata($database);
-                if ($newMetadata instanceof Metadata) {
-                    $row->createColumn(date('Y-m-d H:i:s', $newMetadata->buildEpoch));
-                } else {
-                    $row->createColumn('n/a');
-                }
-            } catch (Exception $exception) {
-                $row
-                    ->createColumn(date('Y-m-d H:i:s', $oldMetadata->buildEpoch))
-                    ->createColumn($exception->getMessage());
+            $newMetadata = $this->locationService->getDatabaseMetadata($database);
+            if ($newMetadata instanceof Metadata) {
+                $results[$database]['build']['current'] = date('Y-m-d H:i:s', $newMetadata->buildEpoch);
             }
-
-            $table->appendRow($row);
         }
 
-        $console->writeLine(sprintf('Running %s for the following database(s): %s',
-            $route->getName(),
-            implode(', ', $databases)
-        ));
-        $console->write($table->render());
+        if ($quiet) {
+            return;
+        }
+
+        foreach ($results as $result) {
+            $console->writeLine($this->getMessage($result));
+        }
     }
 
     /**
-     * @return array
+     * @param array $result
+     * @return string
      */
-    public static function getValidIdentifiers(): array
+    private function getMessage(array $result): string
     {
-        return [
-            LocationService::DATABASE_ALL,
-            LocationService::DATABASE_ASN,
-            LocationService::DATABASE_CITY,
-            LocationService::DATABASE_COUNTRY,
-        ];
+        if (is_null($result['build']['current'])) {
+            return sprintf('Failed to install database %s.', $result['database']);
+        }
+
+        if (is_null($result['build']['previous']) && !is_null($result['build']['current'])) {
+            return sprintf('Database %s has been installed, current version is: %s',
+                $result['database'],
+                $result['build']['current']
+            );
+        }
+
+        if ($result['build']['current'] !== $result['build']['previous']) {
+            return sprintf(
+                'Database %s has been updated from version %s to %s',
+                $result['database'],
+                $result['build']['previous'],
+                $result['build']['current']
+            );
+        }
+
+        return sprintf(
+            'Database %s is already at the latest version: %s',
+            $result['database'],
+            $result['build']['current']
+        );
     }
 
     /**
-     * @param string $identifier
-     * @return array
+     * @param string $database
+     * @return string
      */
-    private function identifyDatabases(string $identifier): array
+    private function getSourcePath(string $database): string
     {
-        if ($identifier === LocationService::DATABASE_ALL) {
-            return [
-                LocationService::DATABASE_ASN,
-                LocationService::DATABASE_CITY,
-                LocationService::DATABASE_COUNTRY,
-            ];
+        return sys_get_temp_dir() . '/' . basename($this->config['databases'][$database]['source']);
+    }
+
+    /**
+     * @param string $database
+     * @return string
+     */
+    private function getTargetPath(string $database): string
+    {
+        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
+    }
+
+    /**
+     * @param string|null $identifier
+     * @return null[]|string[]
+     * @throws Exception
+     */
+    private function identifyDatabases(?string $identifier): array
+    {
+        if (empty($identifier) || $identifier === LocationService::DATABASE_ALL) {
+            return LocationService::DATABASES;
         }
 
-        if (!array_key_exists($identifier, LocationService::DATABASES)) {
-            exit(sprintf('Invalid database identifier: %s. Use one of the following identifiers: %s.',
-                $identifier,
-                implode(', ', self::getValidIdentifiers())
-            ));
+        if (!$this->locationService->isValidDatabaseIdentifier($identifier)) {
+            throw new Exception(
+                sprintf('Invalid database identifier specified: %s',
+                    $identifier,
+                    implode(', ', LocationService::DATABASES)
+                )
+            );
         }
 
         return [$identifier];
