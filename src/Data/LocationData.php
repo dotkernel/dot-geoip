@@ -39,10 +39,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param ContinentData $continent
-     * @return LocationData
+     * @param ContinentData|null $continent
+     * @return $this
      */
-    public function setContinent(ContinentData $continent): self
+    public function setContinent(?ContinentData $continent): self
     {
         $this->continent = $continent;
 
@@ -58,10 +58,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param CountryData $country
-     * @return LocationData
+     * @param CountryData|null $country
+     * @return $this
      */
-    public function setCountry(CountryData $country): self
+    public function setCountry(?CountryData $country): self
     {
         $this->country = $country;
 
@@ -77,10 +77,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param float $latitude
-     * @return LocationData
+     * @param float|null $latitude
+     * @return $this
      */
-    public function setLatitude(float $latitude): self
+    public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
 
@@ -96,10 +96,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param float $longitude
-     * @return LocationData
+     * @param float|null $longitude
+     * @return $this
      */
-    public function setLongitude(float $longitude): self
+    public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
 
@@ -115,10 +115,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param OrganizationData $organization
-     * @return LocationData
+     * @param OrganizationData|null $organization
+     * @return $this
      */
-    public function setOrganization(OrganizationData $organization): self
+    public function setOrganization(?OrganizationData $organization): self
     {
         $this->organization = $organization;
 
@@ -134,10 +134,10 @@ class LocationData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $timeZone
-     * @return LocationData
+     * @param string|null $timeZone
+     * @return $this
      */
-    public function setTimeZone(string $timeZone): self
+    public function setTimeZone(?string $timeZone): self
     {
         $this->timeZone = $timeZone;
 

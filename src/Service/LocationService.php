@@ -30,9 +30,9 @@ class LocationService implements LocationServiceInterface
     const DATABASE_CITY = 'city';
     const DATABASE_COUNTRY = 'country';
     const DATABASES = [
-        self::DATABASE_ASN => 'GeoLite2-ASN.mmdb',
-        self::DATABASE_CITY => 'GeoLite2-City.mmdb',
-        self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb'
+        self::DATABASE_ASN,
+        self::DATABASE_CITY,
+        self::DATABASE_COUNTRY
     ];
 
     /** @var array $config */
@@ -51,11 +51,32 @@ class LocationService implements LocationServiceInterface
      * @param string $database
      * @return bool
      */
-    public function databaseExists(string $database): bool
+    private function databaseExists(string $database): bool
     {
         $path = $this->getDatabasePath($database);
 
         return file_exists($path);
+    }
+
+    /**
+     * @param string $database
+     * @return string
+     */
+    private function getDatabasePath(string $database): string
+    {
+        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
+    }
+
+    /**
+     * @param string $database
+     * @return Reader
+     * @throws InvalidDatabaseException
+     */
+    private function getDatabaseReader(string $database): Reader
+    {
+        $path = $this->getDatabasePath($database);
+
+        return new Reader($path);
     }
 
     /**
@@ -100,37 +121,19 @@ class LocationService implements LocationServiceInterface
     /**
      * @param string $database
      * @return Metadata|null
+     * @throws InvalidDatabaseException
      */
     public function getDatabaseMetadata(string $database): ?Metadata
     {
-        try {
-            $reader = $this->getDatabaseReader($database);
-
-            return $reader->metadata();
-        } catch (Exception $exception) {
+        if (!$this->isValidDatabaseIdentifier($database)) {
             return null;
         }
-    }
 
-    /**
-     * @param string $database
-     * @return string
-     */
-    public function getDatabasePath(string $database): string
-    {
-        return $this->config['databases'][$database]['target'] . '/' . self::DATABASES[$database];
-    }
+        if (!$this->databaseExists($database)) {
+            return null;
+        }
 
-    /**
-     * @param string $database
-     * @return Reader
-     * @throws InvalidDatabaseException
-     */
-    public function getDatabaseReader(string $database): Reader
-    {
-        $path = $this->getDatabasePath($database);
-
-        return new Reader($path);
+        return $this->getDatabaseReader($database)->metadata();
     }
 
     /**
@@ -190,6 +193,15 @@ class LocationService implements LocationServiceInterface
         $organization->setAsn($data->autonomousSystemNumber)->setName($data->autonomousSystemOrganization);
 
         return $organization;
+    }
+
+    /**
+     * @param string $identifier
+     * @return bool
+     */
+    public function isValidDatabaseIdentifier(string $identifier): bool
+    {
+        return in_array($identifier, self::DATABASES);
     }
 
     /**

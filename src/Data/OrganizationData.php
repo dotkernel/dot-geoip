@@ -27,10 +27,10 @@ class OrganizationData implements ArraySerializableInterface
     }
 
     /**
-     * @param int $asn
-     * @return OrganizationData
+     * @param int|null $asn
+     * @return $this
      */
-    public function setAsn(int $asn): self
+    public function setAsn(?int $asn): self
     {
         $this->asn = $asn;
 
@@ -46,10 +46,10 @@ class OrganizationData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $name
-     * @return OrganizationData
+     * @param string|null $name
+     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
