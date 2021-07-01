@@ -10,6 +10,7 @@ use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
 use Exception;
 use GeoIp2\Database\Reader;
+use GeoIp2\Exception\AddressNotFoundException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 
@@ -29,6 +30,8 @@ interface LocationServiceInterface
      * @param string $ipAddress
      * @return ContinentData
      * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
      */
     public function getContinent(string $ipAddress): ContinentData;
 
@@ -36,6 +39,8 @@ interface LocationServiceInterface
      * @param string $ipAddress
      * @return CountryData
      * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
      */
     public function getCountry(string $ipAddress): CountryData;
 
@@ -53,6 +58,12 @@ interface LocationServiceInterface
 
     /**
      * @param string $database
+     * @return string
+     */
+    public function getDatabaseSource(string $database): string;
+
+    /**
+     * @param string $database
      * @return Reader
      * @throws InvalidDatabaseException
      */
@@ -61,6 +72,9 @@ interface LocationServiceInterface
     /**
      * @param string $ipAddress
      * @return LocationData
+     * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
      */
     public function getLocation(string $ipAddress): LocationData;
 
@@ -68,6 +82,8 @@ interface LocationServiceInterface
      * @param string $ipAddress
      * @return OrganizationData
      * @throws Exception
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
      */
     public function getOrganization(string $ipAddress): OrganizationData;
 

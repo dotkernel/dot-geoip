@@ -12,36 +12,32 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class CountryData implements ArraySerializableInterface
 {
-    /** @var bool $isEuMember */
-    protected $isEuMember;
+    protected ?bool $isEuMember = false;
 
-    /** @var string $isoCode */
-    protected $isoCode;
+    protected ?string $isoCode;
 
-    /** @var string $name */
-    protected $name;
+    protected ?string $name;
 
     /**
      * @return bool|null
      */
-    public function isEuMember(): ?bool
+    public function getIsEuMember(): ?bool
     {
         return $this->isEuMember;
     }
 
     /**
-     * @param bool $isEuMember
-     * @return CountryData
+     * @param bool|null $isEuMember
+     * @return $this
      */
-    public function setIsEuMember(bool $isEuMember): self
+    public function setIsEuMember(?bool $isEuMember): self
     {
         $this->isEuMember = $isEuMember;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getIsoCode(): ?string
     {
@@ -49,18 +45,17 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $isoCode
-     * @return CountryData
+     * @param string|null $isoCode
+     * @return $this
      */
-    public function setIsoCode(string $isoCode): self
+    public function setIsoCode(?string $isoCode): self
     {
         $this->isoCode = $isoCode;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -68,13 +63,12 @@ class CountryData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $name
-     * @return CountryData
+     * @param string|null $name
+     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -93,7 +87,7 @@ class CountryData implements ArraySerializableInterface
     public function getArrayCopy(): array
     {
         return [
-            'isEuMember' => $this->isEuMember(),
+            'isEuMember' => $this->getIsEuMember(),
             'isoCode' => $this->getIsoCode(),
             'name' => $this->getName()
         ];

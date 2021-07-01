@@ -12,14 +12,12 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class ContinentData implements ArraySerializableInterface
 {
-    /** @var string $code */
-    protected $code;
+    protected ?string $code;
 
-    /** @var string $name */
-    protected $name;
+    protected ?string $name;
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getCode(): ?string
     {
@@ -27,18 +25,17 @@ class ContinentData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $code
-     * @return ContinentData
+     * @param string|null $code
+     * @return $this
      */
-    public function setCode(string $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -46,13 +43,12 @@ class ContinentData implements ArraySerializableInterface
     }
 
     /**
-     * @param string $name
-     * @return ContinentData
+     * @param string|null $name
+     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 

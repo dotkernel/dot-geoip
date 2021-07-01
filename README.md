@@ -1,5 +1,5 @@
 # dot-geoip
-DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmind/GeoIP2-php) package, using their [free GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) to provide geographical details about an IP address.
+DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmind/GeoIP2-php) package, using [db-ip.com's free GeoLite2 databases](https://db-ip.com/db/) to provide geographical details about an IP address.
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/dotkernel/dot-geoip)
 [![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.0/LICENSE.md)
@@ -12,25 +12,41 @@ You can install this library by running the following command:
 $ composer require dotkernel/dot-geoip
 ```
 
-Using this library in your application is done in two steps:
+If your application didn't already use it, the above command also installed [dotkernel/dot-cli](https://github.com/dotkernel/dot-cli).
+In this case, see it's [README](https://github.com/dotkernel/dot-cli/blob/3.0/README.md) file on how to use it.
 
-### Step 1: Download/Update your local distribution of GeoList2 databases
-Database files can be synchronized by using the [dotkernel/dot-console](https://github.com/dotkernel/dot-console) command provided with this library.
-If your application does not use DotConsole yet, you can add it by consulting it's [README](https://github.com/dotkernel/dot-console/blob/master/README.md) file.
+Copy config file `vendor/dotkernel/dot-geoip/config/autoload/geoip.global.php` into your application's `config/autoload` directory.
 
-Next, add `Dot\GeoIP\ConfigProvider::class,` to your application's `config/config.php` file.
+Register the library's ConfigProvider by adding `Dot\GeoIP\ConfigProvider::class,` to your application's `config/config.php` file.
 
-Once you have DotConsole in your application, continue setting up DotGeoip: 
-* copy the command from `config/autoload/console.global.php` to your application's `config/autoload/console.global.php`
-* copy `config/autoload/geoip.global.php` to your application's `config/autoload/geoip.global.php`
-* copy `data/geoip` to your application's `data` directory - this is where the database file(s) will be downloaded.
-
-After this, running `php bin/console.php geoip:synchronize --database=<database>` from a console will download the latest copy of MaxMind's GeoLite2 database file for the specified database(s).
-Replace `<database>` with one of the following string: `asn`, `city`, `country` to download a specific database file OR with `all` to download all three database files at once.
-You can get help for this command by running `php bin/console.php geoip:synchronize --help`.
+Register the synchronizer CLI command by adding `Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpCommand::class` to your application's `config/autoload/cli.global.php` file under the `commands` array key.
 
 
-### Step 2: Include `Dot\GeoIP\Service\LocationService` in your code
+## Manage GeoLite2 database
+
+You can download/update a specific GeoLite2 database, by running the following command:
+```bash
+$ php bin/cli.php geoip:synchronize -d {DATABASE}
+```
+Where _{DATABASE}_ takes one of the following values: `asn`, `city`, `country`.
+
+You can download/update all GeoLite2 databases at once, by running the following command:
+```bash
+$ php bin/cli.php geoip:synchronize
+```
+The output should be similar to the below, displaying per row: `database identifier`: `previous build datetime` -> `current build datetime`.
+```text
+asn: n/a -> 2021-07-01 02:09:34
+city: n/a -> 2021-07-01 02:09:20
+country: n/a -> 2021-07-01 02:05:12
+```
+
+Get help for this command by running `php bin/cli.php help geoip:synchronize`.
+
+**Tip**: If you setup the synchronizer command as a cronjob, you can add the `-q|--quiet` option, and it will output data only if an error has occurred.
+
+
+## Usage
 Below is an example implementation of using DotGeoip to retrieve information about an IP address.
 
 ```php
@@ -40,31 +56,31 @@ declare(strict_types=1);
 
 namespace Api\Example\Service;
 
-use Dot\GeoIP\Service\LocationService;
-use Dot\GeoIP\Data\LocationData;
+use Dot\GeoIP\Service\LocationServiceInterface;
+use Throwable;
 
 /**
- * Class MyService
+ * Class ExampleService
  * @package Api\Example\Service
  */
-class MyService
+class ExampleService
 {
-    /** @var LocationService $locationService */
-    protected $locationService;
+    protected LocationServiceInterface $locationService;
 
     /**
-     * MyService constructor.
-     * @param LocationService $locationService
+     * ExampleService constructor.
+     * @param LocationServiceInterface $locationService
      */
-    public function __construct(LocationService $locationService)
+    public function __construct(LocationServiceInterface $locationService)
     {
         $this->locationService = $locationService;
     }
 
     /**
      * @param string $ipAddress
+     * @return object
      */
-    public function myMethod(string $ipAddress)
+    public function myMethod(string $ipAddress): object
     {
         try {
             // You can use any of the below methods:
@@ -80,7 +96,7 @@ class MyService
 
             // Get LocationData which includes all of the above + estimated coordinates + timezone
             return $this->locationService->getLocation($ipAddress);
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             // handle errors
         }
     }

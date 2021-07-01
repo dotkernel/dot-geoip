@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Factory;
 
+use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Service\LocationService;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class LocationServiceFactory
+ * Class GeoIpCommandFactory
  * @package Dot\GeoIP\Factory
  */
-class LocationServiceFactory
+class GeoIpCommandFactory
 {
     /**
      * @param ContainerInterface $container
-     * @return LocationService
+     * @return GeoIpCommand
      */
-    public function __invoke(ContainerInterface $container): LocationService
+    public function __invoke(ContainerInterface $container): GeoIpCommand
     {
         $config = $container->get('config')['dot-geoip'] ?? [];
-        return new LocationService($config);
+        return new GeoIpCommand($container->get(LocationService::class), $config);
     }
 }

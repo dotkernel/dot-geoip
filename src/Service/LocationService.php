@@ -13,11 +13,14 @@ use GeoIp2\Exception\AddressNotFoundException;
 use GeoIp2\Database\Reader;
 use MaxMind\Db\Reader\Metadata;
 use MaxMind\Db\Reader\InvalidDatabaseException;
+use Throwable;
 
+use function basename;
 use function explode;
 use function file_exists;
 use function filter_var;
 use function implode;
+use function sys_get_temp_dir;
 
 /**
  * Class LocationService
@@ -35,8 +38,7 @@ class LocationService implements LocationServiceInterface
         self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb'
     ];
 
-    /** @var array $config */
-    protected $config;
+    protected array $config = [];
 
     /**
      * LocationService constructor.
@@ -107,7 +109,7 @@ class LocationService implements LocationServiceInterface
             $reader = $this->getDatabaseReader($database);
 
             return $reader->metadata();
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             return null;
         }
     }
@@ -118,7 +120,16 @@ class LocationService implements LocationServiceInterface
      */
     public function getDatabasePath(string $database): string
     {
-        return $this->config['databases'][$database]['target'] . '/' . self::DATABASES[$database];
+        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
+    }
+
+    /**
+     * @param string $database
+     * @return string
+     */
+    public function getDatabaseSource(string $database): string
+    {
+        return sys_get_temp_dir() . '/' . basename($this->config['databases'][$database]['source']);
     }
 
     /**
@@ -204,12 +215,6 @@ class LocationService implements LocationServiceInterface
             $bytes[3] = '0';
             return implode('.', $bytes);
         }
-
-//        if (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-//            $bytes = explode(':', $ipAddress);
-//            $bytes[count($bytes) - 1] = '0000';
-//            return implode(':', $bytes);
-//        }
 
         throw new Exception('Invalid IP address: ' . $ipAddress);
     }
