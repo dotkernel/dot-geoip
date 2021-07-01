@@ -12,19 +12,16 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class CountryData implements ArraySerializableInterface
 {
-    /** @var bool $isEuMember */
-    protected $isEuMember;
+    protected ?bool $isEuMember = false;
 
-    /** @var string $isoCode */
-    protected $isoCode;
+    protected ?string $isoCode;
 
-    /** @var string $name */
-    protected $name;
+    protected ?string $name;
 
     /**
      * @return bool|null
      */
-    public function isEuMember(): ?bool
+    public function getIsEuMember(): ?bool
     {
         return $this->isEuMember;
     }
@@ -36,12 +33,11 @@ class CountryData implements ArraySerializableInterface
     public function setIsEuMember(?bool $isEuMember): self
     {
         $this->isEuMember = $isEuMember;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getIsoCode(): ?string
     {
@@ -55,12 +51,11 @@ class CountryData implements ArraySerializableInterface
     public function setIsoCode(?string $isoCode): self
     {
         $this->isoCode = $isoCode;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -74,7 +69,6 @@ class CountryData implements ArraySerializableInterface
     public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -93,7 +87,7 @@ class CountryData implements ArraySerializableInterface
     public function getArrayCopy(): array
     {
         return [
-            'isEuMember' => $this->isEuMember(),
+            'isEuMember' => $this->getIsEuMember(),
             'isoCode' => $this->getIsoCode(),
             'name' => $this->getName()
         ];

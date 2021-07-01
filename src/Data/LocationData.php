@@ -12,28 +12,22 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class LocationData implements ArraySerializableInterface
 {
-    /** @var ContinentData $continent */
-    protected $continent;
+    protected ?ContinentData $continent;
 
-    /** @var CountryData $country */
-    protected $country;
+    protected ?CountryData $country;
 
-    /** @var float $latitude */
-    protected $latitude;
+    protected ?float $latitude;
 
-    /** @var float $longitude */
-    protected $longitude;
+    protected ?float $longitude;
 
-    /** @var OrganizationData $organization */
-    protected $organization;
+    protected ?OrganizationData $organization;
 
-    /** @var string $timeZone */
-    protected $timeZone;
+    protected ?string $timeZone;
 
     /**
-     * @return ContinentData
+     * @return ContinentData|null
      */
-    public function getContinent(): ContinentData
+    public function getContinent(): ?ContinentData
     {
         return $this->continent;
     }
@@ -45,14 +39,13 @@ class LocationData implements ArraySerializableInterface
     public function setContinent(?ContinentData $continent): self
     {
         $this->continent = $continent;
-
         return $this;
     }
 
     /**
-     * @return CountryData
+     * @return CountryData|null
      */
-    public function getCountry(): CountryData
+    public function getCountry(): ?CountryData
     {
         return $this->country;
     }
@@ -64,7 +57,6 @@ class LocationData implements ArraySerializableInterface
     public function setCountry(?CountryData $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -83,7 +75,6 @@ class LocationData implements ArraySerializableInterface
     public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
-
         return $this;
     }
 
@@ -102,14 +93,13 @@ class LocationData implements ArraySerializableInterface
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
-
         return $this;
     }
 
     /**
-     * @return OrganizationData
+     * @return OrganizationData|null
      */
-    public function getOrganization(): OrganizationData
+    public function getOrganization(): ?OrganizationData
     {
         return $this->organization;
     }
@@ -121,12 +111,11 @@ class LocationData implements ArraySerializableInterface
     public function setOrganization(?OrganizationData $organization): self
     {
         $this->organization = $organization;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getTimeZone(): ?string
     {
@@ -140,7 +129,6 @@ class LocationData implements ArraySerializableInterface
     public function setTimeZone(?string $timeZone): self
     {
         $this->timeZone = $timeZone;
-
         return $this;
     }
 

@@ -13,11 +13,14 @@ use GeoIp2\Exception\AddressNotFoundException;
 use GeoIp2\Database\Reader;
 use MaxMind\Db\Reader\Metadata;
 use MaxMind\Db\Reader\InvalidDatabaseException;
+use Throwable;
 
+use function basename;
 use function explode;
 use function file_exists;
 use function filter_var;
 use function implode;
+use function sys_get_temp_dir;
 
 /**
  * Class LocationService
@@ -30,13 +33,12 @@ class LocationService implements LocationServiceInterface
     const DATABASE_CITY = 'city';
     const DATABASE_COUNTRY = 'country';
     const DATABASES = [
-        self::DATABASE_ASN,
-        self::DATABASE_CITY,
-        self::DATABASE_COUNTRY
+        self::DATABASE_ASN => 'GeoLite2-ASN.mmdb',
+        self::DATABASE_CITY => 'GeoLite2-City.mmdb',
+        self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb'
     ];
 
-    /** @var array $config */
-    protected $config;
+    protected array $config = [];
 
     /**
      * LocationService constructor.
@@ -51,32 +53,11 @@ class LocationService implements LocationServiceInterface
      * @param string $database
      * @return bool
      */
-    private function databaseExists(string $database): bool
+    public function databaseExists(string $database): bool
     {
         $path = $this->getDatabasePath($database);
 
         return file_exists($path);
-    }
-
-    /**
-     * @param string $database
-     * @return string
-     */
-    private function getDatabasePath(string $database): string
-    {
-        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
-    }
-
-    /**
-     * @param string $database
-     * @return Reader
-     * @throws InvalidDatabaseException
-     */
-    private function getDatabaseReader(string $database): Reader
-    {
-        $path = $this->getDatabasePath($database);
-
-        return new Reader($path);
     }
 
     /**
@@ -121,19 +102,46 @@ class LocationService implements LocationServiceInterface
     /**
      * @param string $database
      * @return Metadata|null
-     * @throws InvalidDatabaseException
      */
     public function getDatabaseMetadata(string $database): ?Metadata
     {
-        if (!$this->isValidDatabaseIdentifier($database)) {
+        try {
+            $reader = $this->getDatabaseReader($database);
+
+            return $reader->metadata();
+        } catch (Throwable $exception) {
             return null;
         }
+    }
 
-        if (!$this->databaseExists($database)) {
-            return null;
-        }
+    /**
+     * @param string $database
+     * @return string
+     */
+    public function getDatabasePath(string $database): string
+    {
+        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
+    }
 
-        return $this->getDatabaseReader($database)->metadata();
+    /**
+     * @param string $database
+     * @return string
+     */
+    public function getDatabaseSource(string $database): string
+    {
+        return sys_get_temp_dir() . '/' . basename($this->config['databases'][$database]['source']);
+    }
+
+    /**
+     * @param string $database
+     * @return Reader
+     * @throws InvalidDatabaseException
+     */
+    public function getDatabaseReader(string $database): Reader
+    {
+        $path = $this->getDatabasePath($database);
+
+        return new Reader($path);
     }
 
     /**
@@ -196,15 +204,6 @@ class LocationService implements LocationServiceInterface
     }
 
     /**
-     * @param string $identifier
-     * @return bool
-     */
-    public function isValidDatabaseIdentifier(string $identifier): bool
-    {
-        return in_array($identifier, self::DATABASES);
-    }
-
-    /**
      * @param string $ipAddress
      * @return string
      * @throws Exception
@@ -216,12 +215,6 @@ class LocationService implements LocationServiceInterface
             $bytes[3] = '0';
             return implode('.', $bytes);
         }
-
-//        if (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-//            $bytes = explode(':', $ipAddress);
-//            $bytes[count($bytes) - 1] = '0000';
-//            return implode(':', $bytes);
-//        }
 
         throw new Exception('Invalid IP address: ' . $ipAddress);
     }

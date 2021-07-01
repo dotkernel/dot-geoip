@@ -12,11 +12,9 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class OrganizationData implements ArraySerializableInterface
 {
-    /** @var int $asn */
-    protected $asn;
+    protected ?int $asn;
 
-    /** @var string $name */
-    protected $name;
+    protected ?string $name;
 
     /**
      * @return int|null
@@ -33,12 +31,11 @@ class OrganizationData implements ArraySerializableInterface
     public function setAsn(?int $asn): self
     {
         $this->asn = $asn;
-
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -52,7 +49,6 @@ class OrganizationData implements ArraySerializableInterface
     public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP;
 
-use Dot\GeoIP\Factory\DatabaseHandlerFactory;
+use Dot\GeoIP\Command\GeoIpCommand;
+use Dot\GeoIP\Factory\GeoIpCommandFactory;
 use Dot\GeoIP\Factory\LocationServiceFactory;
-use Dot\GeoIP\Handler\DatabaseHandler;
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
 
@@ -33,7 +33,7 @@ class ConfigProvider
     {
         return [
             'factories' => [
-                DatabaseHandler::class => DatabaseHandlerFactory::class,
+                GeoIpCommand::class => GeoIpCommandFactory::class,
                 LocationService::class => LocationServiceFactory::class
             ],
             'aliases' => [
