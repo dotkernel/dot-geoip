@@ -13,7 +13,6 @@ use Laminas\Stdlib\ArraySerializableInterface;
 class ContinentData implements ArraySerializableInterface
 {
     protected ?string $code;
-
     protected ?string $name;
 
     /**

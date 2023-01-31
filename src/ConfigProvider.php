@@ -34,10 +34,10 @@ class ConfigProvider
         return [
             'factories' => [
                 GeoIpCommand::class => GeoIpCommandFactory::class,
-                LocationService::class => LocationServiceFactory::class
+                LocationService::class => LocationServiceFactory::class,
             ],
             'aliases' => [
-                LocationServiceInterface::class => LocationService::class
+                LocationServiceInterface::class => LocationService::class,
             ]
         ];
     }

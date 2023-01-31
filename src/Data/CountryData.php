@@ -13,9 +13,7 @@ use Laminas\Stdlib\ArraySerializableInterface;
 class CountryData implements ArraySerializableInterface
 {
     protected ?bool $isEuMember = false;
-
     protected ?string $isoCode;
-
     protected ?string $name;
 
     /**

@@ -13,7 +13,6 @@ use Laminas\Stdlib\ArraySerializableInterface;
 class OrganizationData implements ArraySerializableInterface
 {
     protected ?int $asn;
-
     protected ?string $name;
 
     /**

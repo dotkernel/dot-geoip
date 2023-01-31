@@ -13,15 +13,10 @@ use Laminas\Stdlib\ArraySerializableInterface;
 class LocationData implements ArraySerializableInterface
 {
     protected ?ContinentData $continent;
-
     protected ?CountryData $country;
-
     protected ?float $latitude;
-
     protected ?float $longitude;
-
     protected ?OrganizationData $organization;
-
     protected ?string $timeZone;
 
     /**

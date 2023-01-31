@@ -18,12 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-use function array_key_exists;
-use function array_keys;
-use function date;
-use function implode;
-use function sprintf;
-
 /**
  * Class GeoIpCommand
  * @package Dot\GeoIP\Command
@@ -73,6 +67,7 @@ class GeoIpCommand extends Command
      * @param OutputInterface $output
      * @return int
      * @throws GuzzleException
+     * @throws Exception
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -93,8 +88,10 @@ class GeoIpCommand extends Command
                 $oldVersion = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
             }
 
-            $client = new Client();
-            $client->get($this->config['databases'][$database]['source'], [RequestOptions::SINK => $sourcePath]);
+            $url = trim($this->config['databases'][$database]['source']);
+            $url = str_replace('{year}', date('Y'), $url);
+            $url = str_replace('{month}', date('m'), $url);
+            (new Client())->get($url, [RequestOptions::SINK => $sourcePath]);
 
             $extractor = new Decompress();
             $content = $extractor->getAdapter()->decompress($sourcePath);

@@ -15,13 +15,6 @@ use MaxMind\Db\Reader\Metadata;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Throwable;
 
-use function basename;
-use function explode;
-use function file_exists;
-use function filter_var;
-use function implode;
-use function sys_get_temp_dir;
-
 /**
  * Class LocationService
  * @package Dot\GeoIP\Service
@@ -72,10 +65,9 @@ class LocationService implements LocationServiceInterface
         $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
         $data = $reader->country($this->obfuscateIpAddress($ipAddress));
 
-        $continent = new ContinentData();
-        $continent->setCode($data->continent->code)->setName($data->continent->name);
-
-        return $continent;
+        return (new ContinentData())
+            ->setCode($data->continent->code)
+            ->setName($data->continent->name);
     }
 
     /**
@@ -90,13 +82,10 @@ class LocationService implements LocationServiceInterface
         $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
         $data = $reader->country($this->obfuscateIpAddress($ipAddress));
 
-        $country = new CountryData();
-        $country
+        return (new CountryData())
             ->setIsEuMember($data->country->isInEuropeanUnion)
             ->setIsoCode($data->country->isoCode)
             ->setName($data->country->name);
-
-        return $country;
     }
 
     /**
@@ -106,9 +95,7 @@ class LocationService implements LocationServiceInterface
     public function getDatabaseMetadata(string $database): ?Metadata
     {
         try {
-            $reader = $this->getDatabaseReader($database);
-
-            return $reader->metadata();
+            return $this->getDatabaseReader($database)->metadata();
         } catch (Throwable $exception) {
             return null;
         }
@@ -120,7 +107,7 @@ class LocationService implements LocationServiceInterface
      */
     public function getDatabasePath(string $database): string
     {
-        return sprintf('%s/%s.mmdb', $this->config['targetDir'], $database);
+        return sprintf('%s/%s.mmdb', rtrim($this->config['targetDir'], '/'), $database);
     }
 
     /**
@@ -197,10 +184,9 @@ class LocationService implements LocationServiceInterface
         $reader = $this->getDatabaseReader(self::DATABASE_ASN);
         $data = $reader->asn($this->obfuscateIpAddress($ipAddress));
 
-        $organization = new OrganizationData();
-        $organization->setAsn($data->autonomousSystemNumber)->setName($data->autonomousSystemOrganization);
-
-        return $organization;
+        return (new OrganizationData())
+            ->setAsn($data->autonomousSystemNumber)
+            ->setName($data->autonomousSystemOrganization);
     }
 
     /**
@@ -211,11 +197,17 @@ class LocationService implements LocationServiceInterface
     public function obfuscateIpAddress(string $ipAddress): string
     {
         if (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            $bytes = explode('.', $ipAddress);
-            $bytes[3] = '0';
-            return implode('.', $bytes);
+            $separator = '.';
+        } elseif (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $separator = ':';
+        } else {
+            throw new Exception('Invalid IP address: ' . $ipAddress);
         }
 
-        throw new Exception('Invalid IP address: ' . $ipAddress);
+        $parts = explode($separator, $ipAddress);
+        array_pop($parts);
+        $parts[] = '0';
+
+        return implode($separator, $parts);
     }
 }
