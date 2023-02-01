@@ -6,7 +6,9 @@ namespace Dot\GeoIP\Factory;
 
 use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Service\LocationService;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class GeoIpCommandFactory
@@ -17,10 +19,14 @@ class GeoIpCommandFactory
     /**
      * @param ContainerInterface $container
      * @return GeoIpCommand
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container): GeoIpCommand
     {
-        $config = $container->get('config')['dot-geoip'] ?? [];
-        return new GeoIpCommand($container->get(LocationService::class), $config);
+        return new GeoIpCommand(
+            $container->get(LocationService::class),
+            $container->get('config')['dot-geoip'] ?? []
+        );
     }
 }
