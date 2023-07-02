@@ -16,11 +16,7 @@
         }
     ],
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "laminas/laminas-dependency-plugin": true,
-            "laminas/laminas-component-installer": true
-        }
+        "sort-packages": true
     },
     "require": {
         "php": "^7.4 || ~8.0.0 || ~8.1.0",
@@ -32,7 +28,6 @@
         "symfony/filesystem": "^5.4.7"
     },
     "require-dev": {
-        "laminas/laminas-component-installer": "^3.2",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.5.20",
         "squizlabs/php_codesniffer": "^3.6.2",
