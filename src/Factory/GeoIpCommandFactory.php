@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace Dot\GeoIP\Factory;
 
 use Dot\GeoIP\Command\GeoIpCommand;
-use Dot\GeoIP\Service\LocationService;
+use Dot\GeoIP\Service\LocationServiceInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Exception;
 
-/**
- * Class GeoIpCommandFactory
- * @package Dot\GeoIP\Factory
- */
-class GeoIpCommandFactory
+class GeoIpCommandFactory extends AbstractFactory
 {
     /**
-     * @param ContainerInterface $container
-     * @return GeoIpCommand
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function __invoke(ContainerInterface $container): GeoIpCommand
     {
-        return new GeoIpCommand(
-            $container->get(LocationService::class),
-            $container->get('config')['dot-geoip'] ?? []
-        );
+        $locationService = $container->has(LocationServiceInterface::class)
+            ? $container->get(LocationServiceInterface::class)
+            : null;
+        if (!$locationService instanceof LocationServiceInterface) {
+            throw new Exception(self::MESSAGE_MISSING_LOCATION_SERVICE);
+        }
+
+        return new GeoIpCommand($locationService);
     }
 }

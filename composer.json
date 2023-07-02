@@ -16,7 +16,11 @@
         }
     ],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "laminas/laminas-dependency-plugin": true,
+            "laminas/laminas-component-installer": true
+        }
     },
     "require": {
         "php": "^7.4 || ~8.0.0 || ~8.1.0",
@@ -28,12 +32,31 @@
         "symfony/filesystem": "^5.4.7"
     },
     "require-dev": {
+        "laminas/laminas-component-installer": "^3.2",
+        "mikey179/vfsstream": "^1.6",
+        "phpunit/phpunit": "^9.5.20",
         "squizlabs/php_codesniffer": "^3.6.2",
-        "phpunit/phpunit": "^9.5.20"
+        "vimeo/psalm": "^5.13"
     },
     "autoload": {
         "psr-4": {
             "Dot\\GeoIP\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DotTest\\GeoIP\\": "test/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "static-analysis": "psalm --shepherd --stats"
     }
 }
