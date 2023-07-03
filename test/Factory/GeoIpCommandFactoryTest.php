@@ -8,16 +8,20 @@ use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Factory\AbstractFactory;
 use Dot\GeoIP\Factory\GeoIpCommandFactory;
 use Dot\GeoIP\Service\LocationServiceInterface;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class GeoIpCommandFactoryTest extends AbstractTest
+class GeoIpCommandFactoryTest extends TestCase
 {
+    use CommonTrait;
+
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|Exception
      */
     public function testFactoryWillNotCreateCommandWithoutLocationService(): void
     {
@@ -34,7 +38,7 @@ class GeoIpCommandFactoryTest extends AbstractTest
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|Exception
      */
     public function testFactoryWillCreateCommand(): void
     {

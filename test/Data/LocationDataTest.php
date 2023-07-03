@@ -8,10 +8,13 @@ use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
+use PHPUnit\Framework\TestCase;
 
-class LocationDataTest extends AbstractTest
+class LocationDataTest extends TestCase
 {
+    use CommonTrait;
+
     public function testDefaultValues(): void
     {
         $locationData = new LocationData();

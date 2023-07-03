@@ -7,15 +7,21 @@ namespace DotTest\GeoIP\Command;
 use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GeoIpCommandTest extends AbstractTest
+class GeoIpCommandTest extends TestCase
 {
+    use CommonTrait;
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testCreateCommand(): void
     {
         $locationService = $this->createMock(LocationServiceInterface::class);
@@ -26,7 +32,7 @@ class GeoIpCommandTest extends AbstractTest
 
     /**
      * @throws GuzzleException
-     * @throws InvalidDatabaseException
+     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testExecuteCommandWillCreateDatabaseFile(): void
     {
@@ -46,6 +52,9 @@ class GeoIpCommandTest extends AbstractTest
         $this->assertFileExists($locationService->getDatabasePath(LocationService::DATABASE_ASN));
     }
 
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testWillIdentifyValidDatabases(): void
     {
         $locationService = $this->createMock(LocationServiceInterface::class);
@@ -62,6 +71,9 @@ class GeoIpCommandTest extends AbstractTest
         $this->assertContains(LocationService::DATABASE_COUNTRY, $databases);
     }
 
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testWillIdentifyInvalidDatabases(): void
     {
         $locationService = $this->createMock(LocationServiceInterface::class);

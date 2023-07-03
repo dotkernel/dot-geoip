@@ -6,16 +6,20 @@ namespace DotTest\GeoIP\Factory;
 
 use Dot\GeoIP\Factory\LocationServiceFactory;
 use Dot\GeoIP\Service\LocationService;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class LocationServiceFactoryTest extends AbstractTest
+class LocationServiceFactoryTest extends TestCase
 {
+    use CommonTrait;
+
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|Exception
      */
     public function testCreateService(): void
     {

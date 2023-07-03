@@ -7,11 +7,11 @@ DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmin
 [![GitHub issues](https://img.shields.io/github/issues/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/issues)
 [![GitHub forks](https://img.shields.io/github/forks/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/network)
 [![GitHub stars](https://img.shields.io/github/stars/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/stargazers)
-[![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.3.0/LICENSE.md)
+[![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.4.0/LICENSE.md)
 
 [![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
 
-[![SymfonyInsight](https://insight.symfony.com/projects/1ba56a23-6372-4a9b-9910-ef5994af7a7b/big.svg)](https://insight.symfony.com/projects/1ba56a23-6372-4a9b-9910-ef5994af7a7b)
+[![SymfonyInsight](https://insight.symfony.com/projects/f1468fbc-7c76-48d3-9ca7-0f4d135c0ff3/big.svg)](https://insight.symfony.com/projects/f1468fbc-7c76-48d3-9ca7-0f4d135c0ff3)
 
 ## Install
 
