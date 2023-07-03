@@ -33,7 +33,7 @@
     "require-dev": {
         "laminas/laminas-coding-standard": "^2.5",
         "mikey179/vfsstream": "^1.6",
-        "phpunit/phpunit": "^9.5.20",
+        "phpunit/phpunit": "^10.2",
         "vimeo/psalm": "^5.13"
     },
     "autoload": {

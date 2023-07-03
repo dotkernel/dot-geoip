@@ -8,7 +8,7 @@ use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Service\LocationService;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
 use Exception;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
@@ -18,11 +18,14 @@ use GeoIp2\Model\Country;
 use InvalidArgumentException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
+use PHPUnit\Framework\TestCase;
 
-class LocationServiceTest extends AbstractTest
+class LocationServiceTest extends TestCase
 {
+    use CommonTrait;
+
     /**
-     * @throws InvalidDatabaseException
+     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testAccessors(): void
     {
@@ -102,7 +105,7 @@ class LocationServiceTest extends AbstractTest
 
     /**
      * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testGetContinentReturnsContinentData(): void
     {
@@ -123,7 +126,7 @@ class LocationServiceTest extends AbstractTest
 
     /**
      * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testGetCountryReturnsCountryData(): void
     {
@@ -218,7 +221,7 @@ class LocationServiceTest extends AbstractTest
 
     /**
      * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testGetLocation(): void
     {

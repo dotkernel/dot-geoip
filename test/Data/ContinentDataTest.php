@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace DotTest\GeoIP\Data;
 
 use Dot\GeoIP\Data\ContinentData;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
+use PHPUnit\Framework\TestCase;
 
-class ContinentDataTest extends AbstractTest
+class ContinentDataTest extends TestCase
 {
+    use CommonTrait;
+
     public function testDefaultValues(): void
     {
         $continentData = new ContinentData();

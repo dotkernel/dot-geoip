@@ -7,9 +7,8 @@ namespace DotTest\GeoIP;
 use Dot\GeoIP\Service\LocationService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use PHPUnit\Framework\TestCase;
 
-abstract class AbstractTest extends TestCase
+trait CommonTrait
 {
     protected vfsStreamDirectory $fileSystem;
     protected array $config = [];
@@ -73,7 +72,7 @@ abstract class AbstractTest extends TestCase
         ];
     }
 
-    protected function getSampleData()
+    protected function getSampleData(): bool|string
     {
         return file_get_contents(
             sprintf('%s/sample.mmdb', __DIR__)

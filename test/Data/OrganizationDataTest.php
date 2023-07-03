@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace DotTest\GeoIP\Data;
 
 use Dot\GeoIP\Data\OrganizationData;
-use DotTest\GeoIP\AbstractTest;
+use DotTest\GeoIP\CommonTrait;
+use PHPUnit\Framework\TestCase;
 
-class OrganizationDataTest extends AbstractTest
+class OrganizationDataTest extends TestCase
 {
+    use CommonTrait;
+
     public function testDefaultValues(): void
     {
         $organizationData = new OrganizationData();
