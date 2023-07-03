@@ -18,33 +18,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * Class GeoIpCommand
- * @package Dot\GeoIP\Command
- */
 class GeoIpCommand extends Command
 {
+    protected LocationServiceInterface $locationService;
     protected static $defaultName = 'geoip:synchronize';
 
-    protected array $config = [];
-
-    protected LocationServiceInterface $locationService;
-
-    /**
-     * GeoIpCommand constructor.
-     * @param LocationServiceInterface $locationService
-     * @param array $config
-     */
-    public function __construct(LocationServiceInterface $locationService, array $config)
+    public function __construct(LocationServiceInterface $locationService)
     {
         parent::__construct(self::$defaultName);
-        $this->config = $config;
         $this->locationService = $locationService;
     }
 
-    /**
-     * Configure command
-     */
     public function configure(): void
     {
         $this
@@ -63,17 +47,14 @@ class GeoIpCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
      * @throws GuzzleException
      * @throws Exception
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $fileSystem = new Filesystem();
-        if (!$fileSystem->exists($this->config['targetDir'])) {
-            $fileSystem->mkdir($this->config['targetDir']);
+        if (!$fileSystem->exists($this->locationService->getConfig('targetDir'))) {
+            $fileSystem->mkdir($this->locationService->getConfig('targetDir'));
         }
 
         $database = $input->getOption('database') ?? LocationService::DATABASE_ALL;
@@ -88,13 +69,12 @@ class GeoIpCommand extends Command
                 $oldVersion = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
             }
 
-            $url = trim($this->config['databases'][$database]['source']);
+            $url = trim($this->locationService->getConfig('databases')[$database]['source']);
             $url = str_replace('{year}', date('Y'), $url);
             $url = str_replace('{month}', date('m'), $url);
             (new Client())->get($url, [RequestOptions::SINK => $sourcePath]);
 
-            $extractor = new Decompress();
-            $content = $extractor->getAdapter()->decompress($sourcePath);
+            $content = (new Decompress())->getAdapter()->decompress($sourcePath);
             $fileSystem->remove($targetPath);
             $fileSystem->dumpFile($targetPath, $content);
             $fileSystem->remove($sourcePath);
@@ -112,11 +92,9 @@ class GeoIpCommand extends Command
     }
 
     /**
-     * @param string $identifier
-     * @return array|string[]
      * @throws Exception
      */
-    private function identifyDatabases(string $identifier): array
+    public function identifyDatabases(string $identifier): array
     {
         if ($identifier === LocationService::DATABASE_ALL) {
             return [
@@ -127,7 +105,8 @@ class GeoIpCommand extends Command
         }
 
         if (!array_key_exists($identifier, LocationService::DATABASES)) {
-            $message = sprintf('Invalid database identifier: %s. Use one of the following identifiers: %s.',
+            $message = sprintf(
+                'Invalid database identifier: %s. Use one of the following identifiers: %s.',
                 $identifier,
                 implode(', ', array_keys(LocationService::DATABASES))
             );

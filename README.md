@@ -9,11 +9,15 @@ DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmin
 [![GitHub stars](https://img.shields.io/github/stars/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/stargazers)
 [![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.3.0/LICENSE.md)
 
+[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
+
+[![SymfonyInsight](https://insight.symfony.com/projects/1ba56a23-6372-4a9b-9910-ef5994af7a7b/big.svg)](https://insight.symfony.com/projects/1ba56a23-6372-4a9b-9910-ef5994af7a7b)
+
 ## Install
 
 You can install this library by running the following command:
 ```bash
-$ composer require dotkernel/dot-geoip
+composer require dotkernel/dot-geoip
 ```
 
 If your application didn't already use it, the above command also installed [dotkernel/dot-cli](https://github.com/dotkernel/dot-cli).
@@ -21,22 +25,26 @@ In this case, see it's [README](https://github.com/dotkernel/dot-cli/blob/3.0/RE
 
 Copy config file `vendor/dotkernel/dot-geoip/config/autoload/geoip.global.php` into your application's `config/autoload` directory.
 
-Register the library's ConfigProvider by adding `Dot\GeoIP\ConfigProvider::class,` to your application's `config/config.php` file.
+Register the library's ConfigProvider by adding the following line to your application's `config/config.php` file:
 
-Register the synchronizer CLI command by adding `Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpCommand::class` to your application's `config/autoload/cli.global.php` file under the `commands` array key.
+    Dot\GeoIP\ConfigProvider::class,
+
+Register the library's synchronizer command by adding the following line to your application's `config/autoload/cli.global.php` file under the `commands` array key:
+
+    Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpCommand::class,
 
 
 ## Manage GeoLite2 database
 
 You can download/update a specific GeoLite2 database, by running the following command:
 ```bash
-$ php bin/cli.php geoip:synchronize -d {DATABASE}
+php bin/cli.php geoip:synchronize -d {DATABASE}
 ```
 Where _{DATABASE}_ takes one of the following values: `asn`, `city`, `country`.
 
 You can download/update all GeoLite2 databases at once, by running the following command:
 ```bash
-$ php bin/cli.php geoip:synchronize
+php bin/cli.php geoip:synchronize
 ```
 The output should be similar to the below, displaying per row: `database identifier`: `previous build datetime` -> `current build datetime`.
 ```text

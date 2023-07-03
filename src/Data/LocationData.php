@@ -6,153 +6,137 @@ namespace Dot\GeoIP\Data;
 
 use Laminas\Stdlib\ArraySerializableInterface;
 
-/**
- * Class LocationData
- * @package Dot\GeoIP\Data
- */
 class LocationData implements ArraySerializableInterface
 {
     protected ?ContinentData $continent;
     protected ?CountryData $country;
+    protected ?OrganizationData $organization;
     protected ?float $latitude;
     protected ?float $longitude;
-    protected ?OrganizationData $organization;
     protected ?string $timeZone;
 
-    /**
-     * @return ContinentData|null
-     */
+    public function __construct(
+        ?ContinentData $continent = null,
+        ?CountryData $country = null,
+        ?OrganizationData $organization = null,
+        ?float $latitude = null,
+        ?float $longitude = null,
+        ?string $timeZone = null
+    ) {
+        $this->continent = $continent;
+        $this->country = $country;
+        $this->organization = $organization;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->timeZone = $timeZone;
+    }
+
     public function getContinent(): ?ContinentData
     {
         return $this->continent;
     }
 
-    /**
-     * @param ContinentData|null $continent
-     * @return $this
-     */
+    public function hasContinent(): bool
+    {
+        return $this->continent instanceof ContinentData;
+    }
+
     public function setContinent(?ContinentData $continent): self
     {
         $this->continent = $continent;
+
         return $this;
     }
 
-    /**
-     * @return CountryData|null
-     */
     public function getCountry(): ?CountryData
     {
         return $this->country;
     }
 
-    /**
-     * @param CountryData|null $country
-     * @return $this
-     */
+    public function hasCountry(): bool
+    {
+        return $this->country instanceof CountryData;
+    }
+
     public function setCountry(?CountryData $country): self
     {
         $this->country = $country;
+
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * @param float|null $latitude
-     * @return $this
-     */
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-        return $this;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * @param float|null $longitude
-     * @return $this
-     */
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-        return $this;
-    }
-
-    /**
-     * @return OrganizationData|null
-     */
     public function getOrganization(): ?OrganizationData
     {
         return $this->organization;
     }
 
-    /**
-     * @param OrganizationData|null $organization
-     * @return $this
-     */
+    public function hasOrganization(): bool
+    {
+        return $this->organization instanceof OrganizationData;
+    }
+
     public function setOrganization(?OrganizationData $organization): self
     {
         $this->organization = $organization;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
     public function getTimeZone(): ?string
     {
         return $this->timeZone;
     }
 
-    /**
-     * @param string|null $timeZone
-     * @return $this
-     */
     public function setTimeZone(?string $timeZone): self
     {
         $this->timeZone = $timeZone;
+
         return $this;
     }
 
-    /**
-     * @param array $data
-     * @return LocationData
-     */
-    public function exchangeArray(array $data): self
+    public function exchangeArray(array $array): self
     {
         return $this
-            ->setContinent($data['continent'])
-            ->setCountry($data['country'])
-            ->setLatitude($data['latitude'])
-            ->setLongitude($data['longitude'])
-            ->setOrganization($data['organization'])
-            ->setTimeZone($data['timeZone']);
+            ->setContinent($array['continent'] ?? null)
+            ->setCountry($array['country'] ?? null)
+            ->setOrganization($array['organization'] ?? null)
+            ->setLatitude($array['latitude'] ?? null)
+            ->setLongitude($array['longitude'] ?? null)
+            ->setTimeZone($array['timeZone'] ?? null);
     }
 
-    /**
-     * @return array
-     */
     public function getArrayCopy(): array
     {
         return [
-            'continent' => $this->getContinent()->getArrayCopy(),
-            'country' => $this->getCountry()->getArrayCopy(),
+            'continent' => $this->hasContinent() ? $this->getContinent()->getArrayCopy() : [],
+            'country' => $this->hasCountry() ? $this->getCountry()->getArrayCopy() : [],
+            'organization' => $this->hasOrganization() ? $this->getOrganization()->getArrayCopy() : [],
             'latitude' => $this->getLatitude(),
             'longitude' => $this->getLongitude(),
-            'organization' => $this->getOrganization()->getArrayCopy(),
             'timeZone' => $this->getTimeZone()
         ];
     }

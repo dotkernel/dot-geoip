@@ -9,43 +9,87 @@ use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
 use Exception;
-use GeoIp2\Exception\AddressNotFoundException;
 use GeoIp2\Database\Reader;
-use MaxMind\Db\Reader\Metadata;
 use MaxMind\Db\Reader\InvalidDatabaseException;
+use MaxMind\Db\Reader\Metadata;
 use Throwable;
 
-/**
- * Class LocationService
- * @package Dot\GeoIP\Service
- */
 class LocationService implements LocationServiceInterface
 {
-    const DATABASE_ALL = 'all';
-    const DATABASE_ASN = 'asn';
-    const DATABASE_CITY = 'city';
-    const DATABASE_COUNTRY = 'country';
-    const DATABASES = [
+    protected Reader $countryReader;
+    protected Reader $cityReader;
+    protected Reader $asnReader;
+    public const DATABASE_ALL = 'all';
+    public const DATABASE_ASN = 'asn';
+    public const DATABASE_CITY = 'city';
+    public const DATABASE_COUNTRY = 'country';
+    public const DATABASES = [
         self::DATABASE_ASN => 'GeoLite2-ASN.mmdb',
         self::DATABASE_CITY => 'GeoLite2-City.mmdb',
         self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb'
     ];
-
     protected array $config = [];
 
     /**
-     * LocationService constructor.
-     * @param array $config
+     * @throws InvalidDatabaseException
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+        $this->countryReader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
+        $this->cityReader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
+        $this->asnReader = $this->getDatabaseReader(self::DATABASE_ASN);
+    }
+
+    public function getConfigs(): array
+    {
+        return $this->config;
     }
 
     /**
-     * @param string $database
-     * @return bool
+     * @inheritDoc
      */
+    public function getConfig(string $name)
+    {
+        return $this->config[$name] ?? null;
+    }
+
+    public function getCountryReader(): Reader
+    {
+        return $this->countryReader;
+    }
+
+    public function setCountryReader(Reader $countryReader): self
+    {
+        $this->countryReader = $countryReader;
+
+        return $this;
+    }
+
+    public function getCityReader(): Reader
+    {
+        return $this->cityReader;
+    }
+
+    public function setCityReader(Reader $cityReader): self
+    {
+        $this->cityReader = $cityReader;
+
+        return $this;
+    }
+
+    public function getAsnReader(): Reader
+    {
+        return $this->asnReader;
+    }
+
+    public function setAsnReader(Reader $asnReader): self
+    {
+        $this->asnReader = $asnReader;
+
+        return $this;
+    }
+
     public function databaseExists(string $database): bool
     {
         $path = $this->getDatabasePath($database);
@@ -54,33 +98,23 @@ class LocationService implements LocationServiceInterface
     }
 
     /**
-     * @param string $ipAddress
-     * @return ContinentData
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @inheritDoc
      */
     public function getContinent(string $ipAddress): ContinentData
     {
-        $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $data = $reader->country($this->obfuscateIpAddress($ipAddress));
+        $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
 
         return (new ContinentData())
-            ->setCode($data->continent->code)
-            ->setName($data->continent->name);
+            ->setCode($data->continent->code ?? null)
+            ->setName($data->continent->name ?? null);
     }
 
     /**
-     * @param string $ipAddress
-     * @return CountryData
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @inheritDoc
      */
     public function getCountry(string $ipAddress): CountryData
     {
-        $reader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $data = $reader->country($this->obfuscateIpAddress($ipAddress));
+        $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
 
         return (new CountryData())
             ->setIsEuMember($data->country->isInEuropeanUnion)
@@ -88,10 +122,6 @@ class LocationService implements LocationServiceInterface
             ->setName($data->country->name);
     }
 
-    /**
-     * @param string $database
-     * @return Metadata|null
-     */
     public function getDatabaseMetadata(string $database): ?Metadata
     {
         try {
@@ -101,83 +131,60 @@ class LocationService implements LocationServiceInterface
         }
     }
 
-    /**
-     * @param string $database
-     * @return string
-     */
     public function getDatabasePath(string $database): string
     {
         return sprintf('%s/%s.mmdb', rtrim($this->config['targetDir'], '/'), $database);
     }
 
-    /**
-     * @param string $database
-     * @return string
-     */
     public function getDatabaseSource(string $database): string
     {
-        return sys_get_temp_dir() . '/' . basename($this->config['databases'][$database]['source']);
+        return sprintf('%s/%s', sys_get_temp_dir(), basename($this->config['databases'][$database]['source']));
     }
 
     /**
-     * @param string $database
-     * @return Reader
-     * @throws InvalidDatabaseException
+     * @inheritDoc
      */
     public function getDatabaseReader(string $database): Reader
     {
-        $path = $this->getDatabasePath($database);
-
-        return new Reader($path);
+        return new Reader(
+            $this->getDatabasePath($database)
+        );
     }
 
     /**
-     * @param string $ipAddress
-     * @return LocationData
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @inheritDoc
      */
     public function getLocation(string $ipAddress): LocationData
     {
         $ipAddress = $this->obfuscateIpAddress($ipAddress);
 
-        $reader = $this->getDatabaseReader(self::DATABASE_ASN);
-        $asnData = $reader->asn($ipAddress);
+        $asnData = $this->getAsnReader()->asn($ipAddress);
+        $cityData = $this->getCityReader()->city($ipAddress);
 
-        $reader = $this->getDatabaseReader(self::DATABASE_CITY);
-        $cityData = $reader->city($ipAddress);
+        $continent = (new ContinentData())
+            ->setCode($cityData->continent->code)
+            ->setName($cityData->continent->name);
 
-        $continent = new ContinentData();
-        $continent->setCode($cityData->continent->code)->setName($cityData->continent->name);
-
-        $country = new CountryData();
-        $country
+        $country = (new CountryData())
             ->setIsEuMember($cityData->country->isInEuropeanUnion)
             ->setIsoCode($cityData->country->isoCode)
             ->setName($cityData->country->name);
 
-        $organization = new OrganizationData();
-        $organization->setAsn($asnData->autonomousSystemNumber)->setName($asnData->autonomousSystemOrganization);
+        $organization = (new OrganizationData())
+            ->setAsn($asnData->autonomousSystemNumber)
+            ->setName($asnData->autonomousSystemOrganization);
 
-        $location = new LocationData();
-        $location
+        return (new LocationData())
             ->setContinent($continent)
             ->setCountry($country)
             ->setLatitude($cityData->location->latitude)
             ->setLongitude($cityData->location->longitude)
             ->setOrganization($organization)
             ->setTimeZone($cityData->location->timeZone);
-
-        return $location;
     }
 
     /**
-     * @param string $ipAddress
-     * @return OrganizationData
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
+     * @inheritDoc
      */
     public function getOrganization(string $ipAddress): OrganizationData
     {
@@ -190,9 +197,7 @@ class LocationService implements LocationServiceInterface
     }
 
     /**
-     * @param string $ipAddress
-     * @return string
-     * @throws Exception
+     * @inheritDoc
      */
     public function obfuscateIpAddress(string $ipAddress): string
     {
