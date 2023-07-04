@@ -13,7 +13,7 @@ class OrganizationData implements ArraySerializableInterface
 
     public function __construct(?int $asn = null, ?string $name = null)
     {
-        $this->asn = $asn;
+        $this->asn  = $asn;
         $this->name = $name;
     }
 
@@ -51,8 +51,8 @@ class OrganizationData implements ArraySerializableInterface
     public function getArrayCopy(): array
     {
         return [
-            'asn' => $this->getAsn(),
-            'name' => $this->getName()
+            'asn'  => $this->getAsn(),
+            'name' => $this->getName(),
         ];
     }
 }

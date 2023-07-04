@@ -52,12 +52,12 @@ class LocationDataTest extends TestCase
     public function testExchangeArray(): void
     {
         $locationData = (new LocationData())->exchangeArray([
-            'continent' => new ContinentData(),
-            'country' => new CountryData(),
+            'continent'    => new ContinentData(),
+            'country'      => new CountryData(),
             'organization' => new OrganizationData(),
-            'latitude' => $this->defaults['latitude'],
-            'longitude' => $this->defaults['longitude'],
-            'timeZone' => $this->defaults['timeZone'],
+            'latitude'     => $this->defaults['latitude'],
+            'longitude'    => $this->defaults['longitude'],
+            'timeZone'     => $this->defaults['timeZone'],
         ]);
         $this->assertInstanceOf(LocationData::class, $locationData);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
@@ -71,12 +71,12 @@ class LocationDataTest extends TestCase
     public function testGetArrayCopy(): void
     {
         $locationData = (new LocationData())->exchangeArray([
-            'continent' => new ContinentData(),
-            'country' => new CountryData(),
+            'continent'    => new ContinentData(),
+            'country'      => new CountryData(),
             'organization' => new OrganizationData(),
-            'latitude' => $this->defaults['latitude'],
-            'longitude' => $this->defaults['longitude'],
-            'timeZone' => $this->defaults['timeZone'],
+            'latitude'     => $this->defaults['latitude'],
+            'longitude'    => $this->defaults['longitude'],
+            'timeZone'     => $this->defaults['timeZone'],
         ])->getArrayCopy();
         $this->assertArrayHasKey('continent', $locationData);
         $this->assertIsArray($locationData['continent']);

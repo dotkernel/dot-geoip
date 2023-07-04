@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function count;
+
 class GeoIpCommandTest extends TestCase
 {
     use CommonTrait;
@@ -36,7 +38,7 @@ class GeoIpCommandTest extends TestCase
      */
     public function testExecuteCommandWillCreateDatabaseFile(): void
     {
-        $input = $this->createMock(InputInterface::class);
+        $input  = $this->createMock(InputInterface::class);
         $output = $this->createMock(OutputInterface::class);
 
         $input->expects($this->once())
@@ -47,7 +49,7 @@ class GeoIpCommandTest extends TestCase
             );
 
         $locationService = new LocationService($this->getConfig());
-        $command = new GeoIpCommand($locationService);
+        $command         = new GeoIpCommand($locationService);
         $command->execute($input, $output);
         $this->assertFileExists($locationService->getDatabasePath(LocationService::DATABASE_ASN));
     }
@@ -59,7 +61,7 @@ class GeoIpCommandTest extends TestCase
     {
         $locationService = $this->createMock(LocationServiceInterface::class);
 
-        $command = new GeoIpCommand($locationService);
+        $command   = new GeoIpCommand($locationService);
         $databases = $command->identifyDatabases(LocationService::DATABASE_ASN);
         $this->assertIsArray($databases);
         $this->assertContains(LocationService::DATABASE_ASN, $databases);

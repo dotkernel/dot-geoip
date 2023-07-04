@@ -15,7 +15,7 @@ class ConfigProvider
     public function __invoke(): array
     {
         return [
-            'dependencies' => $this->getDependencies()
+            'dependencies' => $this->getDependencies(),
         ];
     }
 
@@ -23,12 +23,12 @@ class ConfigProvider
     {
         return [
             'factories' => [
-                GeoIpCommand::class => GeoIpCommandFactory::class,
+                GeoIpCommand::class    => GeoIpCommandFactory::class,
                 LocationService::class => LocationServiceFactory::class,
             ],
-            'aliases' => [
+            'aliases'   => [
                 LocationServiceInterface::class => LocationService::class,
-            ]
+            ],
         ];
     }
 }

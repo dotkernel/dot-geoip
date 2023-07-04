@@ -32,7 +32,7 @@ class LocationServiceFactoryTest extends TestCase
                 'dot-geoip' => $this->getConfig(),
             ]);
 
-        $service = (new LocationServiceFactory)($container);
+        $service = (new LocationServiceFactory())($container);
         $this->assertInstanceOf(LocationService::class, $service);
     }
 }

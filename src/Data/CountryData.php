@@ -15,8 +15,8 @@ class CountryData implements ArraySerializableInterface
     public function __construct(?bool $isEuMember = false, ?string $isoCode = null, ?string $name = null)
     {
         $this->isEuMember = $isEuMember;
-        $this->isoCode = $isoCode;
-        $this->name = $name;
+        $this->isoCode    = $isoCode;
+        $this->name       = $name;
     }
 
     public function getIsEuMember(): ?bool
@@ -67,8 +67,8 @@ class CountryData implements ArraySerializableInterface
     {
         return [
             'isEuMember' => $this->getIsEuMember(),
-            'isoCode' => $this->getIsoCode(),
-            'name' => $this->getName()
+            'isoCode'    => $this->getIsoCode(),
+            'name'       => $this->getName(),
         ];
     }
 }
