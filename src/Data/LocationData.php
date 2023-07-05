@@ -23,12 +23,12 @@ class LocationData implements ArraySerializableInterface
         ?float $longitude = null,
         ?string $timeZone = null
     ) {
-        $this->continent = $continent;
-        $this->country = $country;
+        $this->continent    = $continent;
+        $this->country      = $country;
         $this->organization = $organization;
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        $this->timeZone = $timeZone;
+        $this->latitude     = $latitude;
+        $this->longitude    = $longitude;
+        $this->timeZone     = $timeZone;
     }
 
     public function getContinent(): ?ContinentData
@@ -132,12 +132,12 @@ class LocationData implements ArraySerializableInterface
     public function getArrayCopy(): array
     {
         return [
-            'continent' => $this->hasContinent() ? $this->getContinent()->getArrayCopy() : [],
-            'country' => $this->hasCountry() ? $this->getCountry()->getArrayCopy() : [],
+            'continent'    => $this->hasContinent() ? $this->getContinent()->getArrayCopy() : [],
+            'country'      => $this->hasCountry() ? $this->getCountry()->getArrayCopy() : [],
             'organization' => $this->hasOrganization() ? $this->getOrganization()->getArrayCopy() : [],
-            'latitude' => $this->getLatitude(),
-            'longitude' => $this->getLongitude(),
-            'timeZone' => $this->getTimeZone()
+            'latitude'     => $this->getLatitude(),
+            'longitude'    => $this->getLongitude(),
+            'timeZone'     => $this->getTimeZone(),
         ];
     }
 }

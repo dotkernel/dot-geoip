@@ -14,31 +14,45 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 use Throwable;
 
+use function array_pop;
+use function basename;
+use function explode;
+use function file_exists;
+use function filter_var;
+use function implode;
+use function rtrim;
+use function sprintf;
+use function sys_get_temp_dir;
+
+use const FILTER_FLAG_IPV4;
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_IP;
+
 class LocationService implements LocationServiceInterface
 {
     protected Reader $countryReader;
     protected Reader $cityReader;
     protected Reader $asnReader;
-    public const DATABASE_ALL = 'all';
-    public const DATABASE_ASN = 'asn';
-    public const DATABASE_CITY = 'city';
+    public const DATABASE_ALL     = 'all';
+    public const DATABASE_ASN     = 'asn';
+    public const DATABASE_CITY    = 'city';
     public const DATABASE_COUNTRY = 'country';
-    public const DATABASES = [
-        self::DATABASE_ASN => 'GeoLite2-ASN.mmdb',
-        self::DATABASE_CITY => 'GeoLite2-City.mmdb',
-        self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb'
+    public const DATABASES        = [
+        self::DATABASE_ASN     => 'GeoLite2-ASN.mmdb',
+        self::DATABASE_CITY    => 'GeoLite2-City.mmdb',
+        self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb',
     ];
-    protected array $config = [];
+    protected array $config       = [];
 
     /**
      * @throws InvalidDatabaseException
      */
     public function __construct(array $config)
     {
-        $this->config = $config;
+        $this->config        = $config;
         $this->countryReader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $this->cityReader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $this->asnReader = $this->getDatabaseReader(self::DATABASE_ASN);
+        $this->cityReader    = $this->getDatabaseReader(self::DATABASE_COUNTRY);
+        $this->asnReader     = $this->getDatabaseReader(self::DATABASE_ASN);
     }
 
     public function getConfigs(): array
@@ -126,7 +140,7 @@ class LocationService implements LocationServiceInterface
     {
         try {
             return $this->getDatabaseReader($database)->metadata();
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             return null;
         }
     }
@@ -157,10 +171,8 @@ class LocationService implements LocationServiceInterface
     public function getLocation(string $ipAddress): LocationData
     {
         $ipAddress = $this->obfuscateIpAddress($ipAddress);
-
-        $asnData = $this->getAsnReader()->asn($ipAddress);
-        $cityData = $this->getCityReader()->city($ipAddress);
-
+        $asnData   = $this->getAsnReader()->asn($ipAddress);
+        $cityData  = $this->getCityReader()->city($ipAddress);
         $continent = (new ContinentData())
             ->setCode($cityData->continent->code)
             ->setName($cityData->continent->name);
@@ -189,7 +201,7 @@ class LocationService implements LocationServiceInterface
     public function getOrganization(string $ipAddress): OrganizationData
     {
         $reader = $this->getDatabaseReader(self::DATABASE_ASN);
-        $data = $reader->asn($this->obfuscateIpAddress($ipAddress));
+        $data   = $reader->asn($this->obfuscateIpAddress($ipAddress));
 
         return (new OrganizationData())
             ->setAsn($data->autonomousSystemNumber)

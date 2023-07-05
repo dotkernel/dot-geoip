@@ -52,7 +52,7 @@ class ContinentData implements ArraySerializableInterface
     {
         return [
             'code' => $this->getCode(),
-            'name' => $this->getName()
+            'name' => $this->getName(),
         ];
     }
 }

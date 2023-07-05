@@ -6,10 +6,10 @@ namespace Dot\GeoIP\Factory;
 
 use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Service\LocationServiceInterface;
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Exception;
 
 class GeoIpCommandFactory extends AbstractFactory
 {
@@ -23,7 +23,7 @@ class GeoIpCommandFactory extends AbstractFactory
         $locationService = $container->has(LocationServiceInterface::class)
             ? $container->get(LocationServiceInterface::class)
             : null;
-        if (!$locationService instanceof LocationServiceInterface) {
+        if (! $locationService instanceof LocationServiceInterface) {
             throw new Exception(self::MESSAGE_MISSING_LOCATION_SERVICE);
         }
 

@@ -18,9 +18,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
+use function array_key_exists;
+use function array_keys;
+use function date;
+use function implode;
+use function sprintf;
+use function str_replace;
+use function trim;
+
 class GeoIpCommand extends Command
 {
     protected LocationServiceInterface $locationService;
+    /** @var string $defaultName */
     protected static $defaultName = 'geoip:synchronize';
 
     public function __construct(LocationServiceInterface $locationService)
@@ -53,17 +62,17 @@ class GeoIpCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $fileSystem = new Filesystem();
-        if (!$fileSystem->exists($this->locationService->getConfig('targetDir'))) {
+        if (! $fileSystem->exists($this->locationService->getConfig('targetDir'))) {
             $fileSystem->mkdir($this->locationService->getConfig('targetDir'));
         }
 
-        $database = $input->getOption('database') ?? LocationService::DATABASE_ALL;
+        $database  = $input->getOption('database') ?? LocationService::DATABASE_ALL;
         $databases = $this->identifyDatabases($database);
         foreach ($databases as $database) {
             $sourcePath = $this->locationService->getDatabaseSource($database);
             $targetPath = $this->locationService->getDatabasePath($database);
 
-            $oldVersion = 'n/a';
+            $oldVersion  = 'n/a';
             $oldMetadata = $this->locationService->getDatabaseMetadata($database);
             if ($oldMetadata instanceof Metadata) {
                 $oldVersion = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
@@ -79,7 +88,7 @@ class GeoIpCommand extends Command
             $fileSystem->dumpFile($targetPath, $content);
             $fileSystem->remove($sourcePath);
 
-            $newVersion = 'n/a';
+            $newVersion  = 'n/a';
             $newMetadata = $this->locationService->getDatabaseMetadata($database);
             if ($newMetadata instanceof Metadata) {
                 $newVersion = date('Y-m-d H:i:s', $newMetadata->buildEpoch);
@@ -104,7 +113,7 @@ class GeoIpCommand extends Command
             ];
         }
 
-        if (!array_key_exists($identifier, LocationService::DATABASES)) {
+        if (! array_key_exists($identifier, LocationService::DATABASES)) {
             $message = sprintf(
                 'Invalid database identifier: %s. Use one of the following identifiers: %s.',
                 $identifier,
