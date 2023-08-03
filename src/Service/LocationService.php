@@ -10,7 +10,6 @@ use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
 use Exception;
 use GeoIp2\Database\Reader;
-use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 use Throwable;
 
@@ -33,6 +32,7 @@ class LocationService implements LocationServiceInterface
     protected Reader $countryReader;
     protected Reader $cityReader;
     protected Reader $asnReader;
+    protected array $config       = [];
     public const DATABASE_ALL     = 'all';
     public const DATABASE_ASN     = 'asn';
     public const DATABASE_CITY    = 'city';
@@ -42,17 +42,10 @@ class LocationService implements LocationServiceInterface
         self::DATABASE_CITY    => 'GeoLite2-City.mmdb',
         self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb',
     ];
-    protected array $config       = [];
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function __construct(array $config)
     {
-        $this->config        = $config;
-        $this->countryReader = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $this->cityReader    = $this->getDatabaseReader(self::DATABASE_COUNTRY);
-        $this->asnReader     = $this->getDatabaseReader(self::DATABASE_ASN);
+        $this->config = $config;
     }
 
     public function getConfigs(): array
