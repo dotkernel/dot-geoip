@@ -27,7 +27,7 @@
         "geoip2/geoip2": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
         "laminas/laminas-filter": "^2.34",
-        "psr/container": "^2.0",
+        "psr/container": "^1.1",
         "symfony/filesystem": "^7.0"
     },
     "require-dev": {
