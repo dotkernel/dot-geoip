@@ -22,19 +22,19 @@
         }
     },
     "require": {
-        "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
-        "dotkernel/dot-cli": "^3.2",
-        "geoip2/geoip2": "^2.12.2",
-        "guzzlehttp/guzzle": "^7.4.2",
-        "laminas/laminas-filter": "^2.14",
-        "psr/container": "^1.1.2",
-        "symfony/filesystem": "^5.4.7"
+        "php": "~8.2.0 || ~8.3.0",
+        "dotkernel/dot-cli": "^3.5",
+        "geoip2/geoip2": "^3.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "laminas/laminas-filter": "^2.34",
+        "psr/container": "^1.1",
+        "symfony/filesystem": "^7.0"
     },
     "require-dev": {
         "laminas/laminas-coding-standard": "^2.5",
         "mikey179/vfsstream": "^1.6",
-        "phpunit/phpunit": "^10.2",
-        "vimeo/psalm": "^5.13"
+        "phpunit/phpunit": "^10.5",
+        "vimeo/psalm": "^5.21"
     },
     "autoload": {
         "psr-4": {

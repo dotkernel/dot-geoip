@@ -1,3 +1,21 @@
+## 3.6.0 - 2024-02-08
+
+### Changed
+* Upgraded all dependencies
+* Dot\GeoIP\Command\GeoIpCommand.php
+
+### Added
+* Nothing
+
+### Deprecated
+* Nothing
+
+### Removed
+* Removed support for PHP 8.1
+
+### Fixed
+* Removed 'ZF\Console\Route' from 'DatabaseHandler' with 'Dot\Console\RouteCollector as Route';
+
 ## 3.0.1 - 2021-02-15
 
 ### Changed
