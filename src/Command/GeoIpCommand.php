@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Laminas\Filter\Decompress;
 use MaxMind\Db\Reader\Metadata;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,6 +27,10 @@ use function sprintf;
 use function str_replace;
 use function trim;
 
+#[AsCommand(
+    name: 'geoip:synchronize',
+    description: 'Download latest version of GeoLite2-* database files.',
+)]
 class GeoIpCommand extends Command
 {
     protected LocationServiceInterface $locationService;
