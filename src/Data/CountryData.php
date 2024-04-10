@@ -11,12 +11,18 @@ class CountryData implements ArraySerializableInterface
     protected ?bool $isEuMember;
     protected ?string $isoCode;
     protected ?string $name;
+    protected ?string $error;
 
-    public function __construct(?bool $isEuMember = false, ?string $isoCode = null, ?string $name = null)
-    {
+    public function __construct(
+        ?bool $isEuMember = false,
+        ?string $isoCode = null,
+        ?string $name = null,
+        ?string $error = null
+    ) {
         $this->isEuMember = $isEuMember;
         $this->isoCode    = $isoCode;
         $this->name       = $name;
+        $this->error      = $error;
     }
 
     public function getIsEuMember(): ?bool
@@ -55,12 +61,24 @@ class CountryData implements ArraySerializableInterface
         return $this;
     }
 
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): self
+    {
+        $this->error = $error;
+        return $this;
+    }
+
     public function exchangeArray(array $array): self
     {
         return $this
             ->setIsEuMember($array['isEuMember'] ?? null)
             ->setIsoCode($array['isoCode'] ?? null)
-            ->setName($array['name'] ?? null);
+            ->setName($array['name'] ?? null)
+            ->setError($array['error'] ?? null);
     }
 
     public function getArrayCopy(): array
@@ -69,6 +87,7 @@ class CountryData implements ArraySerializableInterface
             'isEuMember' => $this->getIsEuMember(),
             'isoCode'    => $this->getIsoCode(),
             'name'       => $this->getName(),
+            'error'      => $this->getError(),
         ];
     }
 }

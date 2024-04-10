@@ -17,6 +17,7 @@ class ContinentDataTest extends TestCase
         $continentData = new ContinentData();
         $this->assertNull($continentData->getCode());
         $this->assertNull($continentData->getName());
+        $this->assertNull($continentData->getError());
     }
 
     public function testAccessors(): void
@@ -28,6 +29,9 @@ class ContinentDataTest extends TestCase
         $continentData->setName($this->defaults['continent']['name']);
         $this->assertInstanceOf(ContinentData::class, $continentData);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
+        $continentData->setError($this->defaults['continent']['error']);
+        $this->assertInstanceOf(ContinentData::class, $continentData);
+        $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);
     }
 
     public function testExchangeArray(): void
@@ -36,6 +40,7 @@ class ContinentDataTest extends TestCase
         $this->assertInstanceOf(ContinentData::class, $continentData);
         $this->assertSame($continentData->getCode(), $this->defaults['continent']['code']);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
+        $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);
     }
 
     public function testGetArrayCopy(): void
@@ -46,5 +51,7 @@ class ContinentDataTest extends TestCase
         $this->assertSame($continentData['code'], $this->defaults['continent']['code']);
         $this->assertArrayHasKey('name', $continentData);
         $this->assertSame($continentData['name'], $this->defaults['continent']['name']);
+        $this->assertArrayHasKey('error', $continentData);
+        $this->assertSame('error', $this->defaults['continent']['error']);
     }
 }

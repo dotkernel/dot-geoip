@@ -17,6 +17,7 @@ class OrganizationDataTest extends TestCase
         $organizationData = new OrganizationData();
         $this->assertNull($organizationData->getAsn());
         $this->assertNull($organizationData->getName());
+        $this->assertNull($organizationData->getError());
     }
 
     public function testAccessors(): void
@@ -28,6 +29,9 @@ class OrganizationDataTest extends TestCase
         $organizationData->setName($this->defaults['organization']['name']);
         $this->assertInstanceOf(OrganizationData::class, $organizationData);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
+        $organizationData->setError($this->defaults['organization']['error']);
+        $this->assertInstanceOf(OrganizationData::class, $organizationData);
+        $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
     }
 
     public function testExchangeArray(): void
@@ -36,6 +40,7 @@ class OrganizationDataTest extends TestCase
         $this->assertInstanceOf(OrganizationData::class, $organizationData);
         $this->assertSame($organizationData->getAsn(), $this->defaults['organization']['asn']);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
+        $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
     }
 
     public function testGetArrayCopy(): void
@@ -46,5 +51,7 @@ class OrganizationDataTest extends TestCase
         $this->assertSame($organizationData['asn'], $this->defaults['organization']['asn']);
         $this->assertArrayHasKey('name', $organizationData);
         $this->assertSame($organizationData['name'], $this->defaults['organization']['name']);
+        $this->assertArrayHasKey('error', $organizationData);
+        $this->assertSame('error', $this->defaults['organization']['error']);
     }
 }

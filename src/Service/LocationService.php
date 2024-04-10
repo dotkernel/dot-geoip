@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Service;
 
+use Dot\GeoIP\Data\CityData;
 use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
@@ -125,33 +126,47 @@ class LocationService implements LocationServiceInterface
         return file_exists($path);
     }
 
-    /**
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
-     */
     public function getContinent(string $ipAddress): ContinentData
     {
-        $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
+        $continentData = new ContinentData();
+        try {
+            $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
+            $continentData->setCode($data->continent->code);
+            $continentData->setName($data->continent->name);
+        } catch (Throwable $exception) {
+            $continentData->setError($exception->getMessage());
+        }
 
-        return (new ContinentData())
-            ->setCode($data->continent->code ?? null)
-            ->setName($data->continent->name ?? null);
+        return $continentData;
     }
 
-    /**
-     * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
-     */
     public function getCountry(string $ipAddress): CountryData
     {
-        $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
+        $countryData = new CountryData();
+        try {
+            $data = $this->getCountryReader()->country($this->obfuscateIpAddress($ipAddress));
+            $countryData->setIsoCode($data->country->isoCode);
+            $countryData->setName($data->country->name);
+            $countryData->setIsEuMember($data->country->isInEuropeanUnion);
+        } catch (Throwable $exception) {
+            $countryData->setError($exception->getMessage());
+        }
 
-        return (new CountryData())
-            ->setIsEuMember($data->country->isInEuropeanUnion)
-            ->setIsoCode($data->country->isoCode)
-            ->setName($data->country->name);
+        return $countryData;
+    }
+
+    public function getCity(string $ipAddress): CityData
+    {
+        $cityData = new CityData();
+
+        try {
+            $data = $this->getCityReader()->city($this->obfuscateIpAddress($ipAddress));
+            $cityData->setName($data->city->name);
+        } catch (Throwable $exception) {
+            $cityData->setError($exception->getMessage());
+        }
+
+        return $cityData;
     }
 
     public function getDatabaseMetadata(string $database): ?Metadata
@@ -191,24 +206,21 @@ class LocationService implements LocationServiceInterface
     public function getLocation(string $ipAddress): LocationData
     {
         $ipAddress = $this->obfuscateIpAddress($ipAddress);
-        $asnData   = $this->getAsnReader()->asn($ipAddress);
-        $cityData  = $this->getCityReader()->city($ipAddress);
-        $continent = (new ContinentData())
-            ->setCode($cityData->continent->code)
-            ->setName($cityData->continent->name);
 
-        $country = (new CountryData())
-            ->setIsEuMember($cityData->country->isInEuropeanUnion)
-            ->setIsoCode($cityData->country->isoCode)
-            ->setName($cityData->country->name);
+        $cityData = $this->getCityReader()->city($ipAddress);
 
-        $organization = (new OrganizationData())
-            ->setAsn($asnData->autonomousSystemNumber)
-            ->setName($asnData->autonomousSystemOrganization);
+        $continent = $this->getContinent($ipAddress);
+
+        $country = $this->getCountry($ipAddress);
+
+        $city = $this->getCity($ipAddress);
+
+        $organization = $this->getOrganization($ipAddress);
 
         return (new LocationData())
             ->setContinent($continent)
             ->setCountry($country)
+            ->setCity($city)
             ->setLatitude($cityData->location->latitude)
             ->setLongitude($cityData->location->longitude)
             ->setOrganization($organization)
@@ -217,17 +229,19 @@ class LocationService implements LocationServiceInterface
 
     /**
      * @throws Exception
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException
      */
     public function getOrganization(string $ipAddress): OrganizationData
     {
-        $reader = $this->getDatabaseReader(self::DATABASE_ASN);
-        $data   = $reader->asn($this->obfuscateIpAddress($ipAddress));
+        $organizationData = new OrganizationData();
+        try {
+            $data = $this->getAsnReader()->asn($this->obfuscateIpAddress($ipAddress));
+            $organizationData->setAsn($data->autonomousSystemNumber);
+            $organizationData->setName($data->autonomousSystemOrganization);
+        } catch (Throwable $exception) {
+            $organizationData->setError($exception->getMessage());
+        }
 
-        return (new OrganizationData())
-            ->setAsn($data->autonomousSystemNumber)
-            ->setName($data->autonomousSystemOrganization);
+        return $organizationData;
     }
 
     /**
