@@ -10,6 +10,8 @@ DotKernel component based on Maxmind's [geoip2/geoip2](https://github.com/maxmin
 [![GitHub stars](https://img.shields.io/github/stars/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/stargazers)
 [![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.0/LICENSE)
 
+[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
+
 [![SymfonyInsight](https://insight.symfony.com/projects/f1468fbc-7c76-48d3-9ca7-0f4d135c0ff3/big.svg)](https://insight.symfony.com/projects/f1468fbc-7c76-48d3-9ca7-0f4d135c0ff3)
 
 ## Install
