@@ -18,6 +18,7 @@ class CountryDataTest extends TestCase
         $this->assertFalse($countryData->getIsEuMember());
         $this->assertNull($countryData->getIsoCode());
         $this->assertNull($countryData->getName());
+        $this->assertNull($countryData->getError());
     }
 
     public function testAccessors(): void
@@ -32,6 +33,9 @@ class CountryDataTest extends TestCase
         $countryData->setName($this->defaults['country']['name']);
         $this->assertInstanceOf(CountryData::class, $countryData);
         $this->assertSame($countryData->getName(), $this->defaults['country']['name']);
+        $countryData->setError($this->defaults['country']['error']);
+        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertSame($countryData->getError(), $this->defaults['country']['error']);
     }
 
     public function testExchangeArray(): void
@@ -41,6 +45,7 @@ class CountryDataTest extends TestCase
         $this->assertSame($countryData->getIsEuMember(), $this->defaults['country']['isEuMember']);
         $this->assertSame($countryData->getIsoCode(), $this->defaults['country']['isoCode']);
         $this->assertSame($countryData->getName(), $this->defaults['country']['name']);
+        $this->assertSame($countryData->getError(), $this->defaults['country']['error']);
     }
 
     public function testGetArrayCopy(): void
@@ -53,5 +58,7 @@ class CountryDataTest extends TestCase
         $this->assertSame($countryData['isoCode'], $this->defaults['country']['isoCode']);
         $this->assertArrayHasKey('name', $countryData);
         $this->assertSame($countryData['name'], $this->defaults['country']['name']);
+        $this->assertArrayHasKey('error', $countryData);
+        $this->assertSame('error', $this->defaults['country']['error']);
     }
 }

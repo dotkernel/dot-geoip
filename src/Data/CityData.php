@@ -6,32 +6,15 @@ namespace Dot\GeoIP\Data;
 
 use Laminas\Stdlib\ArraySerializableInterface;
 
-class ContinentData implements ArraySerializableInterface
+class CityData implements ArraySerializableInterface
 {
-    protected ?string $code;
     protected ?string $name;
     protected ?string $error;
 
-    public function __construct(
-        ?string $code = null,
-        ?string $name = null,
-        ?string $error = null
-    ) {
-        $this->code  = $code;
+    public function __construct(?string $name = null, ?string $error = null)
+    {
         $this->name  = $name;
         $this->error = $error;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): self
-    {
-        $this->code = $code;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -42,7 +25,6 @@ class ContinentData implements ArraySerializableInterface
     public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -59,16 +41,14 @@ class ContinentData implements ArraySerializableInterface
 
     public function exchangeArray(array $array): self
     {
-        return $this
+        return ($this)
             ->setName($array['name'] ?? null)
-            ->setCode($array['code'] ?? null)
             ->setError($array['error'] ?? null);
     }
 
     public function getArrayCopy(): array
     {
         return [
-            'code'  => $this->getCode(),
             'name'  => $this->getName(),
             'error' => $this->getError(),
         ];

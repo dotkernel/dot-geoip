@@ -10,6 +10,7 @@ class LocationData implements ArraySerializableInterface
 {
     protected ?ContinentData $continent;
     protected ?CountryData $country;
+    protected ?CityData $city;
     protected ?OrganizationData $organization;
     protected ?float $latitude;
     protected ?float $longitude;
@@ -18,6 +19,7 @@ class LocationData implements ArraySerializableInterface
     public function __construct(
         ?ContinentData $continent = null,
         ?CountryData $country = null,
+        ?CityData $city = null,
         ?OrganizationData $organization = null,
         ?float $latitude = null,
         ?float $longitude = null,
@@ -25,6 +27,7 @@ class LocationData implements ArraySerializableInterface
     ) {
         $this->continent    = $continent;
         $this->country      = $country;
+        $this->city         = $city;
         $this->organization = $organization;
         $this->latitude     = $latitude;
         $this->longitude    = $longitude;
@@ -58,9 +61,26 @@ class LocationData implements ArraySerializableInterface
         return $this->country instanceof CountryData;
     }
 
+    public function hasCity(): bool
+    {
+        return $this->city instanceof CityData;
+    }
+
     public function setCountry(?CountryData $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    public function getCity(): ?CityData
+    {
+        return $this->city;
+    }
+
+    public function setCity(?CityData $city): self
+    {
+        $this->city = $city;
 
         return $this;
     }
@@ -123,6 +143,7 @@ class LocationData implements ArraySerializableInterface
         return $this
             ->setContinent($array['continent'] ?? null)
             ->setCountry($array['country'] ?? null)
+            ->setCity($array['city'] ?? null)
             ->setOrganization($array['organization'] ?? null)
             ->setLatitude($array['latitude'] ?? null)
             ->setLongitude($array['longitude'] ?? null)
@@ -134,6 +155,7 @@ class LocationData implements ArraySerializableInterface
         return [
             'continent'    => $this->hasContinent() ? $this->getContinent()->getArrayCopy() : [],
             'country'      => $this->hasCountry() ? $this->getCountry()->getArrayCopy() : [],
+            'city'         => $this->hasCity() ? $this->getCity()->getArrayCopy() : [],
             'organization' => $this->hasOrganization() ? $this->getOrganization()->getArrayCopy() : [],
             'latitude'     => $this->getLatitude(),
             'longitude'    => $this->getLongitude(),

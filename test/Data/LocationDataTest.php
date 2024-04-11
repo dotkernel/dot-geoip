@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DotTest\GeoIP\Data;
 
+use Dot\GeoIP\Data\CityData;
 use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
@@ -20,6 +21,7 @@ class LocationDataTest extends TestCase
         $locationData = new LocationData();
         $this->assertNull($locationData->getContinent());
         $this->assertNull($locationData->getCountry());
+        $this->assertNull($locationData->getCity());
         $this->assertNull($locationData->getOrganization());
         $this->assertNull($locationData->getLatitude());
         $this->assertNull($locationData->getLongitude());
@@ -35,6 +37,9 @@ class LocationDataTest extends TestCase
         $locationData->setCountry(new CountryData());
         $this->assertInstanceOf(LocationData::class, $locationData);
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
+        $locationData->setCity(new CityData());
+        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertInstanceOf(CityData::class, $locationData->getCity());
         $locationData->setOrganization(new OrganizationData());
         $this->assertInstanceOf(LocationData::class, $locationData);
         $this->assertInstanceOf(OrganizationData::class, $locationData->getOrganization());
@@ -54,6 +59,7 @@ class LocationDataTest extends TestCase
         $locationData = (new LocationData())->exchangeArray([
             'continent'    => new ContinentData(),
             'country'      => new CountryData(),
+            'city'         => new CityData(),
             'organization' => new OrganizationData(),
             'latitude'     => $this->defaults['latitude'],
             'longitude'    => $this->defaults['longitude'],
@@ -62,6 +68,7 @@ class LocationDataTest extends TestCase
         $this->assertInstanceOf(LocationData::class, $locationData);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
+        $this->assertInstanceOf(CityData::class, $locationData->getCity());
         $this->assertInstanceOf(OrganizationData::class, $locationData->getOrganization());
         $this->assertSame($this->defaults['latitude'], $locationData->getLatitude());
         $this->assertSame($this->defaults['longitude'], $locationData->getLongitude());
@@ -73,6 +80,7 @@ class LocationDataTest extends TestCase
         $locationData = (new LocationData())->exchangeArray([
             'continent'    => new ContinentData(),
             'country'      => new CountryData(),
+            'city'         => new CityData(),
             'organization' => new OrganizationData(),
             'latitude'     => $this->defaults['latitude'],
             'longitude'    => $this->defaults['longitude'],
@@ -82,15 +90,25 @@ class LocationDataTest extends TestCase
         $this->assertIsArray($locationData['continent']);
         $this->assertArrayHasKey('code', $locationData['continent']);
         $this->assertArrayHasKey('name', $locationData['continent']);
+        $this->assertArrayHasKey('error', $locationData['continent']);
+
         $this->assertArrayHasKey('country', $locationData);
-        $this->assertIsArray($locationData['country']);
         $this->assertArrayHasKey('isEuMember', $locationData['country']);
         $this->assertArrayHasKey('isoCode', $locationData['country']);
         $this->assertArrayHasKey('name', $locationData['country']);
+        $this->assertArrayHasKey('error', $locationData['country']);
+
+        $this->assertArrayHasKey('city', $locationData);
+        $this->assertIsArray($locationData['city']);
+        $this->assertArrayHasKey('name', $locationData['city']);
+        $this->assertArrayHasKey('error', $locationData['city']);
+
         $this->assertArrayHasKey('organization', $locationData);
         $this->assertIsArray($locationData['organization']);
         $this->assertArrayHasKey('asn', $locationData['organization']);
         $this->assertArrayHasKey('name', $locationData['organization']);
+        $this->assertArrayHasKey('error', $locationData['organization']);
+
         $this->assertArrayHasKey('latitude', $locationData);
         $this->assertSame($locationData['latitude'], $this->defaults['latitude']);
         $this->assertSame($locationData['longitude'], $this->defaults['longitude']);

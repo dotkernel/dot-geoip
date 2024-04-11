@@ -17,17 +17,24 @@ trait CommonTrait
     protected array $config   = [];
     protected array $defaults = [
         'continent'    => [
-            'code' => 'code',
-            'name' => 'name',
+            'code'  => 'code',
+            'name'  => 'name',
+            'error' => 'error',
         ],
         'country'      => [
             'isEuMember' => false,
             'isoCode'    => 'isoCode',
             'name'       => 'name',
+            'error'      => 'error',
         ],
         'organization' => [
-            'asn'  => 123456,
-            'name' => 'name',
+            'asn'   => 123456,
+            'name'  => 'name',
+            'error' => 'error',
+        ],
+        'city'         => [
+            'name'  => 'name',
+            'error' => 'error',
         ],
         'latitude'     => 12.34,
         'longitude'    => 12.34,

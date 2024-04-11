@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DotTest\GeoIP\Service;
 
+use Dot\GeoIP\Data\CityData;
 use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
@@ -47,9 +48,6 @@ class LocationServiceTest extends TestCase
         $this->assertInstanceOf(Reader::class, $locationService->getAsnReader());
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetConfigsReturnsValidArray(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -63,9 +61,6 @@ class LocationServiceTest extends TestCase
         $this->assertNotEmpty($configs['databases']);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetConfigReturnsCorrectValueOnValidKey(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -77,9 +72,6 @@ class LocationServiceTest extends TestCase
         $this->assertNotEmpty($value);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetConfigReturnsNullOnInvalidKey(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -87,9 +79,6 @@ class LocationServiceTest extends TestCase
         $this->assertNull($value);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testDatabaseExistsValidDatabase(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -97,9 +86,6 @@ class LocationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testDatabaseExistsInvalidDatabase(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -108,8 +94,7 @@ class LocationServiceTest extends TestCase
     }
 
     /**
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testGetContinentReturnsContinentData(): void
     {
@@ -128,9 +113,16 @@ class LocationServiceTest extends TestCase
         $this->assertInstanceOf(ContinentData::class, $data);
     }
 
+    public function testGetContinentReturnsAnError()
+    {
+        $locationService = new LocationService($this->getConfig());
+        $data            = $locationService->getContinent('::1');
+        $this->assertInstanceOf(ContinentData::class, $data);
+        $this->assertIsString($data->getError());
+    }
+
     /**
-     * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testGetCountryReturnsCountryData(): void
     {
@@ -149,9 +141,40 @@ class LocationServiceTest extends TestCase
         $this->assertInstanceOf(CountryData::class, $data);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
+    public function testGetCountryReturnsAnError()
+    {
+        $locationService = new LocationService($this->getConfig());
+        $data            = $locationService->getCountry('::1');
+        $this->assertInstanceOf(CountryData::class, $data);
+        $this->assertIsString($data->getError());
+    }
+
+    public function testGetCityReturnsCityData()
+    {
+        $cityModel = new City([
+            'city' => $this->defaults['city'],
+        ]);
+
+        $cityReader = $this->createMock(Reader::class);
+        $cityReader
+            ->expects($this->once())
+            ->method('city')
+            ->willReturn($cityModel);
+
+        $data = (new LocationService($this->getConfig()))
+            ->setCityReader($cityReader)
+            ->getCity('1.1.1.1');
+        $this->assertInstanceOf(CityData::class, $data);
+    }
+
+    public function testGetCityReturnsAnError()
+    {
+        $locationService = new LocationService($this->getConfig());
+        $data            = $locationService->getCity('::1');
+        $this->assertInstanceOf(CityData::class, $data);
+        $this->assertIsString($data->getError());
+    }
+
     public function testGetDatabaseMetadataForValidDatabase(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -159,9 +182,6 @@ class LocationServiceTest extends TestCase
         $this->assertInstanceOf(Metadata::class, $result);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetDatabaseMetadataForInvalidDatabase(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -169,9 +189,6 @@ class LocationServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetDatabasePath(): void
     {
         $locationService = new LocationService($this->getConfig());
@@ -247,11 +264,9 @@ class LocationServiceTest extends TestCase
         $asnReader  = $this->createMock(Reader::class);
         $cityReader = $this->createMock(Reader::class);
         $asnReader
-            ->expects($this->once())
             ->method('asn')
             ->willReturn($asnModel);
         $cityReader
-            ->expects($this->once())
             ->method('city')
             ->willReturn($cityModel);
 

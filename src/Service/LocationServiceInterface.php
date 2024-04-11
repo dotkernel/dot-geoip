@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Service;
 
+use Dot\GeoIP\Data\CityData;
 use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
@@ -22,6 +23,8 @@ interface LocationServiceInterface
     public function getContinent(string $ipAddress): ContinentData;
 
     public function getCountry(string $ipAddress): CountryData;
+
+    public function getCity(string $ipAddress): CityData;
 
     public function getDatabaseMetadata(string $database): ?Metadata;
 
