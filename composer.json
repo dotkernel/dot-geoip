@@ -1,6 +1,6 @@
 {
     "name": "dotkernel/dot-geoip",
-    "description": "DotKernel component based on Maxmind's geoip2/geoip2 package, using their free GeoLite2 databases to provide geographical details about an IP address.",
+    "description": "Dotkernel component based on Maxmind's geoip2/geoip2 package, using their free GeoLite2 databases to provide geographical details about an IP address.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -11,7 +11,7 @@
     ],
     "authors": [
         {
-            "name": "DotKernel Team",
+            "name": "Dotkernel Team",
             "email": "team@dotkernel.com"
         }
     ],
@@ -22,7 +22,7 @@
         }
     },
     "require": {
-        "php": "~8.2.0 || ~8.3.0",
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
         "dotkernel/dot-cli": "^3.5",
         "geoip2/geoip2": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
@@ -31,7 +31,7 @@
         "symfony/filesystem": "^7.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "^2.5",
+        "laminas/laminas-coding-standard": "^3.0",
         "mikey179/vfsstream": "^1.6.7",
         "phpunit/phpunit": "^10.5",
         "vimeo/psalm": "^5.21"
@@ -49,7 +49,8 @@
     "scripts": {
         "check": [
             "@cs-check",
-            "@test"
+            "@test",
+            "@static-analysis"
         ],
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
