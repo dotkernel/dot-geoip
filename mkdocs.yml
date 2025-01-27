@@ -14,7 +14,7 @@ nav:
       - "Manage GeoLite2 database": v3/manage-geolite2-database.md
       - Usage: v3/usage.md
 site_name: dot-geoip
-site_description: "DotKernel's component to provide geographical details about an IP address"
+site_description: "Dotkernel's component to provide geographical details about an IP address"
 repo_url: "https://github.com/dotkernel/dot-geoip"
 plugins:
   - search
