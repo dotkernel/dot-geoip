@@ -13,6 +13,7 @@
 
 [![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
 [![codecov](https://codecov.io/gh/dotkernel/dot-geoip/graph/badge.svg?token=K473P7MDZ4)](https://codecov.io/gh/dotkernel/dot-geoip)
+[![PHPStan](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
 
 ## Install
 
