@@ -2,7 +2,6 @@
 
 Dotkernel component to provide geographical details about an IP address
 
-> [!IMPORTANT]
 > dot-geoip is a wrapper on top of [maxmind/GeoIP2-php](https://github.com/maxmind/GeoIP2-php)
 
 ## Documentation
