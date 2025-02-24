@@ -29,7 +29,7 @@ class GeoIpCommandTest extends TestCase
         $locationService = $this->createMock(LocationServiceInterface::class);
 
         $command = new GeoIpCommand($locationService);
-        $this->assertInstanceOf(GeoIpCommand::class, $command);
+        $this->assertContainsOnlyInstancesOf(GeoIpCommand::class, [$command]);
     }
 
     /**

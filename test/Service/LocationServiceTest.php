@@ -38,14 +38,14 @@ class LocationServiceTest extends TestCase
 
         $locationService = new LocationService($this->getConfig());
         $locationService->setCountryReader($readerService);
-        $this->assertInstanceOf(LocationService::class, $locationService);
-        $this->assertInstanceOf(Reader::class, $locationService->getCountryReader());
+        $this->assertContainsOnlyInstancesOf(LocationService::class, [$locationService]);
+        $this->assertContainsOnlyInstancesOf(Reader::class, [$locationService->getCountryReader()]);
         $locationService->setCityReader($readerService);
-        $this->assertInstanceOf(LocationService::class, $locationService);
-        $this->assertInstanceOf(Reader::class, $locationService->getCityReader());
+        $this->assertContainsOnlyInstancesOf(LocationService::class, [$locationService]);
+        $this->assertContainsOnlyInstancesOf(Reader::class, [$locationService->getCityReader()]);
         $locationService->setAsnReader($readerService);
-        $this->assertInstanceOf(LocationService::class, $locationService);
-        $this->assertInstanceOf(Reader::class, $locationService->getAsnReader());
+        $this->assertContainsOnlyInstancesOf(LocationService::class, [$locationService]);
+        $this->assertContainsOnlyInstancesOf(Reader::class, [$locationService->getAsnReader()]);
     }
 
     public function testGetConfigsReturnsValidArray(): void
@@ -110,14 +110,14 @@ class LocationServiceTest extends TestCase
         $data = (new LocationService($this->getConfig()))
             ->setCountryReader($countryReader)
             ->getContinent('1.1.1.1');
-        $this->assertInstanceOf(ContinentData::class, $data);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$data]);
     }
 
     public function testGetContinentReturnsAnError()
     {
         $locationService = new LocationService($this->getConfig());
         $data            = $locationService->getContinent('::1');
-        $this->assertInstanceOf(ContinentData::class, $data);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$data]);
         $this->assertIsString($data->getError());
     }
 
@@ -138,14 +138,14 @@ class LocationServiceTest extends TestCase
         $data = (new LocationService($this->getConfig()))
             ->setCountryReader($countryReader)
             ->getCountry('1.1.1.1');
-        $this->assertInstanceOf(CountryData::class, $data);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$data]);
     }
 
     public function testGetCountryReturnsAnError()
     {
         $locationService = new LocationService($this->getConfig());
         $data            = $locationService->getCountry('::1');
-        $this->assertInstanceOf(CountryData::class, $data);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$data]);
         $this->assertIsString($data->getError());
     }
 
@@ -164,14 +164,14 @@ class LocationServiceTest extends TestCase
         $data = (new LocationService($this->getConfig()))
             ->setCityReader($cityReader)
             ->getCity('1.1.1.1');
-        $this->assertInstanceOf(CityData::class, $data);
+        $this->assertContainsOnlyInstancesOf(CityData::class, [$data]);
     }
 
     public function testGetCityReturnsAnError()
     {
         $locationService = new LocationService($this->getConfig());
         $data            = $locationService->getCity('::1');
-        $this->assertInstanceOf(CityData::class, $data);
+        $this->assertContainsOnlyInstancesOf(CityData::class, [$data]);
         $this->assertIsString($data->getError());
     }
 
@@ -223,7 +223,7 @@ class LocationServiceTest extends TestCase
     {
         $locationService = new LocationService($this->getConfig());
         $reader          = $locationService->getDatabaseReader(LocationService::DATABASE_ASN);
-        $this->assertInstanceOf(Reader::class, $reader);
+        $this->assertContainsOnlyInstancesOf(Reader::class, [$reader]);
     }
 
     /**
@@ -274,7 +274,7 @@ class LocationServiceTest extends TestCase
             ->setAsnReader($asnReader)
             ->setCityReader($cityReader)
             ->getLocation($ipAddress);
-        $this->assertInstanceOf(LocationData::class, $data);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$data]);
     }
 
     /**

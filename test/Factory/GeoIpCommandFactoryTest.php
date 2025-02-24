@@ -55,6 +55,6 @@ class GeoIpCommandFactoryTest extends TestCase
         ]);
 
         $command = (new GeoIpCommandFactory())($container);
-        $this->assertInstanceOf(GeoIpCommand::class, $command);
+        $this->assertContainsOnlyInstancesOf(GeoIpCommand::class, [$command]);
     }
 }

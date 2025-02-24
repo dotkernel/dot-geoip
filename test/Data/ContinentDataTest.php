@@ -24,20 +24,20 @@ class ContinentDataTest extends TestCase
     {
         $continentData = new ContinentData();
         $continentData->setCode($this->defaults['continent']['code']);
-        $this->assertInstanceOf(ContinentData::class, $continentData);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getCode(), $this->defaults['continent']['code']);
         $continentData->setName($this->defaults['continent']['name']);
-        $this->assertInstanceOf(ContinentData::class, $continentData);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
         $continentData->setError($this->defaults['continent']['error']);
-        $this->assertInstanceOf(ContinentData::class, $continentData);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);
     }
 
     public function testExchangeArray(): void
     {
         $continentData = (new ContinentData())->exchangeArray($this->defaults['continent']);
-        $this->assertInstanceOf(ContinentData::class, $continentData);
+        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getCode(), $this->defaults['continent']['code']);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
         $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);

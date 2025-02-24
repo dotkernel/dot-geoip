@@ -32,25 +32,25 @@ class LocationDataTest extends TestCase
     {
         $locationData = new LocationData();
         $locationData->setContinent(new ContinentData());
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
         $locationData->setCountry(new CountryData());
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
         $locationData->setCity(new CityData());
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(CityData::class, $locationData->getCity());
         $locationData->setOrganization(new OrganizationData());
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(OrganizationData::class, $locationData->getOrganization());
         $locationData->setLatitude($this->defaults['latitude']);
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getLatitude(), $this->defaults['latitude']);
         $locationData->setLongitude($this->defaults['longitude']);
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getLongitude(), $this->defaults['longitude']);
         $locationData->setTimeZone($this->defaults['timeZone']);
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getTimeZone(), $this->defaults['timeZone']);
     }
 
@@ -65,7 +65,7 @@ class LocationDataTest extends TestCase
             'longitude'    => $this->defaults['longitude'],
             'timeZone'     => $this->defaults['timeZone'],
         ]);
-        $this->assertInstanceOf(LocationData::class, $locationData);
+        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
         $this->assertInstanceOf(CityData::class, $locationData->getCity());

@@ -23,17 +23,17 @@ class CityDataTest extends TestCase
     {
         $cityData = new CityData();
         $cityData->setName($this->defaults['city']['name']);
-        $this->assertInstanceOf(CityData::class, $cityData);
+        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getName(), $this->defaults['city']['name']);
         $cityData->setError($this->defaults['city']['error']);
-        $this->assertInstanceOf(CityData::class, $cityData);
+        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getError(), $this->defaults['city']['error']);
     }
 
     public function testExchangeArray()
     {
         $cityData = (new CityData())->exchangeArray($this->defaults['city']);
-        $this->assertInstanceOf(CityData::class, $cityData);
+        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getName(), $this->defaults['city']['name']);
         $this->assertSame($cityData->getError(), $this->defaults['city']['error']);
     }

@@ -33,6 +33,6 @@ class LocationServiceFactoryTest extends TestCase
             ]);
 
         $service = (new LocationServiceFactory())($container);
-        $this->assertInstanceOf(LocationService::class, $service);
+        $this->assertContainsOnlyInstancesOf(LocationService::class, [$service]);
     }
 }

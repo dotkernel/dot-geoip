@@ -25,23 +25,23 @@ class CountryDataTest extends TestCase
     {
         $countryData = new CountryData();
         $countryData->setIsEuMember($this->defaults['country']['isEuMember']);
-        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$countryData]);
         $this->assertSame($countryData->getIsEuMember(), $this->defaults['country']['isEuMember']);
         $countryData->setIsoCode($this->defaults['country']['isoCode']);
-        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$countryData]);
         $this->assertSame($countryData->getIsoCode(), $this->defaults['country']['isoCode']);
         $countryData->setName($this->defaults['country']['name']);
-        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$countryData]);
         $this->assertSame($countryData->getName(), $this->defaults['country']['name']);
         $countryData->setError($this->defaults['country']['error']);
-        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$countryData]);
         $this->assertSame($countryData->getError(), $this->defaults['country']['error']);
     }
 
     public function testExchangeArray(): void
     {
         $countryData = (new CountryData())->exchangeArray($this->defaults['country']);
-        $this->assertInstanceOf(CountryData::class, $countryData);
+        $this->assertContainsOnlyInstancesOf(CountryData::class, [$countryData]);
         $this->assertSame($countryData->getIsEuMember(), $this->defaults['country']['isEuMember']);
         $this->assertSame($countryData->getIsoCode(), $this->defaults['country']['isoCode']);
         $this->assertSame($countryData->getName(), $this->defaults['country']['name']);

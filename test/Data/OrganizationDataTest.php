@@ -24,20 +24,20 @@ class OrganizationDataTest extends TestCase
     {
         $organizationData = new OrganizationData();
         $organizationData->setAsn($this->defaults['organization']['asn']);
-        $this->assertInstanceOf(OrganizationData::class, $organizationData);
+        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getAsn(), $this->defaults['organization']['asn']);
         $organizationData->setName($this->defaults['organization']['name']);
-        $this->assertInstanceOf(OrganizationData::class, $organizationData);
+        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
         $organizationData->setError($this->defaults['organization']['error']);
-        $this->assertInstanceOf(OrganizationData::class, $organizationData);
+        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
     }
 
     public function testExchangeArray(): void
     {
         $organizationData = (new OrganizationData())->exchangeArray($this->defaults['organization']);
-        $this->assertInstanceOf(OrganizationData::class, $organizationData);
+        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getAsn(), $this->defaults['organization']['asn']);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
         $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
