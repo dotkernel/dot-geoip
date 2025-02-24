@@ -1,10 +1,18 @@
 # dot-geoip
 
+Dotkernel component to provide geographical details about an IP address
+
 > [!IMPORTANT]
 > dot-geoip is a wrapper on top of [maxmind/GeoIP2-php](https://github.com/maxmind/GeoIP2-php)
 
+## Documentation
+
+Documentation is available at: https://docs.dotkernel.org/dot-geoip/.
+
+## Badges
+
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/dotkernel/dot-geoip)
-![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.8.1)
+![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.9.0)
 
 [![GitHub issues](https://img.shields.io/github/issues/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/issues)
 [![GitHub forks](https://img.shields.io/github/forks/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/network)
