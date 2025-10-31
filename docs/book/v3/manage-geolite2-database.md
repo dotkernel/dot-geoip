@@ -1,6 +1,6 @@
 # Manage GeoLite2 database
 
-You can download/update a specific GeoLite2 database, by running the following command:
+You can download/update a specific GeoLite2 database by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize -d {DATABASE}
@@ -8,7 +8,7 @@ php ./bin/cli.php geoip:synchronize -d {DATABASE}
 
 Where _{DATABASE}_ takes one of the following values: `asn`, `city`, `country`.
 
-You can download/update all GeoLite2 databases at once, by running the following command:
+You can download/update all GeoLite2 databases at once by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize

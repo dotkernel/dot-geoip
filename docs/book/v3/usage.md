@@ -35,15 +35,15 @@ class ExampleService
      */
     public function myMethod(string $ipAddress): object
     {
-       return $this->locationService->getCountry($ipAddress); // Returns instance of Dot\GeoIP\Data\CountryData
+       return $this->locationService->getCountry($ipAddress); // Returns an instance of Dot\GeoIP\Data\CountryData
        
        return $this->locationService->getCity($ipAddress); // Return instance of Dot\GeoIP\Data\CityData
        
-       return $this->locationService->getContinent($ipAddress) // Returns instance of Dot\GeoIP\Data\ContinentData
+       return $this->locationService->getContinent($ipAddress) // Returns an instance of Dot\GeoIP\Data\ContinentData
        
-       return $this->locationService->getOrganization($ipAddress) // Returns instance of Dot\GeoIP\Data\OrganizationData
+       return $this->locationService->getOrganization($ipAddress) // Returns an instance of Dot\GeoIP\Data\OrganizationData
        
-       return $this->locationService->getLocation($ipAddress) // Returns instance of Dot\GeoIP\Data\LocationData
+       return $this->locationService->getLocation($ipAddress) // Returns an instance of Dot\GeoIP\Data\LocationData
     }
 }
 ```
