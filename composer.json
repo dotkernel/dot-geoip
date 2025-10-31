@@ -22,7 +22,7 @@
         }
     },
     "require": {
-        "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
         "dotkernel/dot-cli": "^3.5",
         "geoip2/geoip2": "^3.0",
         "guzzlehttp/guzzle": "^7.8",

@@ -11,7 +11,7 @@ Documentation is available at: https://docs.dotkernel.org/dot-geoip/.
 ## Badges
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/dotkernel/dot-geoip)
-![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.9.0)
+![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.10.0)
 
 [![GitHub issues](https://img.shields.io/github/issues/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/issues)
 [![GitHub forks](https://img.shields.io/github/forks/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/network)
@@ -31,7 +31,7 @@ composer require dotkernel/dot-geoip
 ```
 
 If your application didn't already use it, the above command also installed [dotkernel/dot-cli](https://github.com/dotkernel/dot-cli).
-In this case, see it's [README](https://github.com/dotkernel/dot-cli/blob/3.0/README.md) file on how to use it.
+In this case, see its [README](https://github.com/dotkernel/dot-cli/blob/3.0/README.md) file on how to use it.
 
 Copy config file `vendor/dotkernel/dot-geoip/config/autoload/geoip.global.php` into your application's `config/autoload` directory.
 
@@ -49,7 +49,7 @@ Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpComma
 
 ## Manage GeoLite2 database
 
-You can download/update a specific GeoLite2 database, by running the following command:
+You can download/update a specific GeoLite2 database by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize -d {DATABASE}
@@ -57,7 +57,7 @@ php ./bin/cli.php geoip:synchronize -d {DATABASE}
 
 Where _{DATABASE}_ takes one of the following values: `asn`, `city`, `country`.
 
-You can download/update all GeoLite2 databases at once, by running the following command:
+You can download/update all GeoLite2 databases at once by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize
@@ -115,16 +115,16 @@ class ExampleService
         try {
             // You can use any of the below methods:
             
-            // Get CountryData which includes isEuMember, isoCode and name
+            // Get CountryData, which includes isEuMember, isoCode and name
             return $this->locationService->getCountry($ipAddress);
             
-            // Get ContinentData which includes code and name
+            // Get ContinentData, which includes code and name
             return $this->locationService->getContinent($ipAddress);
             
-            // Get OrganizationData which includes asn and name
+            // Get OrganizationData, which includes asn and name
             return $this->locationService->getOrganization($ipAddress);
 
-            // Get LocationData which includes all of the above + estimated coordinates + timezone
+            // Get LocationData, which includes all the above + estimated coordinates and timezone
             return $this->locationService->getLocation($ipAddress);
         } catch (Throwable $exception) {
             // handle errors
