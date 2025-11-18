@@ -33,14 +33,13 @@ use function trim;
 )]
 class GeoIpCommand extends Command
 {
-    protected LocationServiceInterface $locationService;
     /** @var string $defaultName */
-    protected static $defaultName = 'geoip:synchronize';
+    public static $defaultName = 'geoip:synchronize';
 
-    public function __construct(LocationServiceInterface $locationService)
-    {
+    public function __construct(
+        protected LocationServiceInterface $locationService,
+    ) {
         parent::__construct(self::$defaultName);
-        $this->locationService = $locationService;
     }
 
     public function configure(): void
