@@ -16,15 +16,19 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 use Throwable;
 
+use function array_key_exists;
 use function array_pop;
 use function basename;
+use function date;
 use function explode;
 use function file_exists;
 use function filter_var;
 use function implode;
 use function rtrim;
 use function sprintf;
+use function str_replace;
 use function sys_get_temp_dir;
+use function trim;
 
 use const FILTER_FLAG_IPV4;
 use const FILTER_FLAG_IPV6;
@@ -121,7 +125,7 @@ class LocationService implements LocationServiceInterface
 
     public function databaseExists(string $database): bool
     {
-        $path = $this->getDatabasePath($database);
+        $path = $this->getRealFilePath($database);
 
         return file_exists($path);
     }
@@ -178,14 +182,16 @@ class LocationService implements LocationServiceInterface
         }
     }
 
-    public function getDatabasePath(string $database): string
+    public function getRealFilePath(string $database): string
     {
         return sprintf('%s/%s.mmdb', rtrim($this->config['targetDir'], '/'), $database);
     }
 
-    public function getDatabaseSource(string $database): string
+    public function getTempFilePath(string $database): string
     {
-        return sprintf('%s/%s', sys_get_temp_dir(), basename($this->config['databases'][$database]['source']));
+        return $this->parsePlaceholders(
+            sprintf('%s/%s', sys_get_temp_dir(), basename($this->config['databases'][$database]['source']))
+        );
     }
 
     /**
@@ -194,8 +200,20 @@ class LocationService implements LocationServiceInterface
     public function getDatabaseReader(string $database): Reader
     {
         return new Reader(
-            $this->getDatabasePath($database)
+            $this->getRealFilePath($database)
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getDatabaseSourceUrl(string $database): string
+    {
+        if (! array_key_exists($database, $this->config['databases'])) {
+            throw new Exception('Database source URL not found');
+        }
+
+        return $this->parsePlaceholders($this->config['databases'][$database]['source']);
     }
 
     /**
@@ -262,5 +280,13 @@ class LocationService implements LocationServiceInterface
         $parts[] = '0';
 
         return implode($separator, $parts);
+    }
+
+    private function parsePlaceholders(string $subject): string
+    {
+        $subject = str_replace('{year}', date('Y'), $subject);
+        $subject = str_replace('{month}', date('m'), $subject);
+
+        return trim($subject);
     }
 }

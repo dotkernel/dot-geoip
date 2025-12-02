@@ -20,13 +20,12 @@ class GeoIpCommandFactory extends AbstractFactory
      */
     public function __invoke(ContainerInterface $container): GeoIpCommand
     {
-        $locationService = $container->has(LocationServiceInterface::class)
-            ? $container->get(LocationServiceInterface::class)
-            : null;
-        if (! $locationService instanceof LocationServiceInterface) {
+        if (! $container->has(LocationServiceInterface::class)) {
             throw new Exception(self::MESSAGE_MISSING_LOCATION_SERVICE);
         }
 
-        return new GeoIpCommand($locationService);
+        return new GeoIpCommand(
+            $container->get(LocationServiceInterface::class)
+        );
     }
 }

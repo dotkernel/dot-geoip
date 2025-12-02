@@ -21,7 +21,8 @@ class GeoIpCommandFactoryTest extends TestCase
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface|Exception
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
      */
     public function testFactoryWillNotCreateCommandWithoutLocationService(): void
     {
@@ -38,7 +39,8 @@ class GeoIpCommandFactoryTest extends TestCase
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface|Exception
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
      */
     public function testFactoryWillCreateCommand(): void
     {

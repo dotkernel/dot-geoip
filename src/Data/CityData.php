@@ -8,13 +8,10 @@ use Laminas\Stdlib\ArraySerializableInterface;
 
 class CityData implements ArraySerializableInterface
 {
-    protected ?string $name;
-    protected ?string $error;
-
-    public function __construct(?string $name = null, ?string $error = null)
-    {
-        $this->name  = $name;
-        $this->error = $error;
+    public function __construct(
+        private ?string $name = null,
+        private ?string $error = null,
+    ) {
     }
 
     public function getName(): ?string
@@ -25,6 +22,7 @@ class CityData implements ArraySerializableInterface
     public function setName(?string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -36,6 +34,7 @@ class CityData implements ArraySerializableInterface
     public function setError(?string $error): self
     {
         $this->error = $error;
+
         return $this;
     }
 

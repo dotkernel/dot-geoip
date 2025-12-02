@@ -8,30 +8,15 @@ use Laminas\Stdlib\ArraySerializableInterface;
 
 class LocationData implements ArraySerializableInterface
 {
-    protected ?ContinentData $continent;
-    protected ?CountryData $country;
-    protected ?CityData $city;
-    protected ?OrganizationData $organization;
-    protected ?float $latitude;
-    protected ?float $longitude;
-    protected ?string $timeZone;
-
     public function __construct(
-        ?ContinentData $continent = null,
-        ?CountryData $country = null,
-        ?CityData $city = null,
-        ?OrganizationData $organization = null,
-        ?float $latitude = null,
-        ?float $longitude = null,
-        ?string $timeZone = null
+        private ?ContinentData $continent = null,
+        private ?CountryData $country = null,
+        private ?CityData $city = null,
+        private ?OrganizationData $organization = null,
+        private ?float $latitude = null,
+        private ?float $longitude = null,
+        private ?string $timeZone = null,
     ) {
-        $this->continent    = $continent;
-        $this->country      = $country;
-        $this->city         = $city;
-        $this->organization = $organization;
-        $this->latitude     = $latitude;
-        $this->longitude    = $longitude;
-        $this->timeZone     = $timeZone;
     }
 
     public function getContinent(): ?ContinentData

@@ -8,18 +8,11 @@ use Laminas\Stdlib\ArraySerializableInterface;
 
 class ContinentData implements ArraySerializableInterface
 {
-    protected ?string $code;
-    protected ?string $name;
-    protected ?string $error;
-
     public function __construct(
-        ?string $code = null,
-        ?string $name = null,
-        ?string $error = null
+        private ?string $code = null,
+        private ?string $name = null,
+        private ?string $error = null,
     ) {
-        $this->code  = $code;
-        $this->name  = $name;
-        $this->error = $error;
     }
 
     public function getCode(): ?string

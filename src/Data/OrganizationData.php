@@ -8,18 +8,11 @@ use Laminas\Stdlib\ArraySerializableInterface;
 
 class OrganizationData implements ArraySerializableInterface
 {
-    protected ?int $asn;
-    protected ?string $name;
-    protected ?string $error;
-
     public function __construct(
-        ?int $asn = null,
-        ?string $name = null,
-        ?string $error = null
+        private ?int $asn = null,
+        private ?string $name = null,
+        private ?string $error = null,
     ) {
-        $this->asn   = $asn;
-        $this->name  = $name;
-        $this->error = $error;
     }
 
     public function getAsn(): ?int
@@ -54,6 +47,7 @@ class OrganizationData implements ArraySerializableInterface
     public function setError(?string $error): self
     {
         $this->error = $error;
+
         return $this;
     }
 

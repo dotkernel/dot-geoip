@@ -4,28 +4,27 @@ declare(strict_types=1);
 
 namespace Dot\GeoIP\Command;
 
+use Dot\GeoIP\Client;
+use Dot\GeoIP\Extractor;
+use Dot\GeoIP\FileSystem;
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\RequestOptions;
-use Laminas\Filter\Decompress;
+use InvalidArgumentException;
 use MaxMind\Db\Reader\Metadata;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 use function array_key_exists;
 use function array_keys;
 use function date;
 use function implode;
+use function ini_set;
+use function preg_match;
 use function sprintf;
-use function str_replace;
-use function trim;
 
 #[AsCommand(
     name: 'geoip:synchronize',
@@ -35,11 +34,14 @@ class GeoIpCommand extends Command
 {
     /** @var string $defaultName */
     public static $defaultName = 'geoip:synchronize';
+    private FileSystem $fileSystem;
 
     public function __construct(
         protected LocationServiceInterface $locationService,
     ) {
         parent::__construct(self::$defaultName);
+
+        $this->fileSystem = new FileSystem();
     }
 
     public function configure(): void
@@ -56,25 +58,32 @@ class GeoIpCommand extends Command
                     implode(', ', array_keys(LocationService::DATABASES))
                 ),
                 LocationService::DATABASE_ALL
+            )
+            ->addOption(
+                'memory-limit',
+                'm',
+                InputOption::VALUE_OPTIONAL,
+                'Memory limit for decompression. Examples: 256M, 1G',
+                '128M'
             );
     }
 
     /**
-     * @throws GuzzleException
      * @throws Exception
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $fileSystem = new Filesystem();
-        if (! $fileSystem->exists($this->locationService->getConfig('targetDir'))) {
-            $fileSystem->mkdir($this->locationService->getConfig('targetDir'));
-        }
+        $memoryLimit = $input->getOption('memory-limit');
+        $this->validateMemoryLimit($memoryLimit);
+        ini_set('memory_limit', $memoryLimit);
+
+        $this->fileSystem->mkdir($this->locationService->getConfig('targetDir'));
 
         $database  = $input->getOption('database') ?? LocationService::DATABASE_ALL;
         $databases = $this->identifyDatabases($database);
         foreach ($databases as $database) {
-            $sourcePath = $this->locationService->getDatabaseSource($database);
-            $targetPath = $this->locationService->getDatabasePath($database);
+            $tempFilePath = $this->locationService->getTempFilePath($database);
+            $realFilePath = $this->locationService->getRealFilePath($database);
 
             $oldVersion  = 'n/a';
             $oldMetadata = $this->locationService->getDatabaseMetadata($database);
@@ -82,15 +91,11 @@ class GeoIpCommand extends Command
                 $oldVersion = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
             }
 
-            $url = trim($this->locationService->getConfig('databases')[$database]['source']);
-            $url = str_replace('{year}', date('Y'), $url);
-            $url = str_replace('{month}', date('m'), $url);
-            (new Client())->get($url, [RequestOptions::SINK => $sourcePath]);
+            (new Client())->get($this->locationService->getDatabaseSourceUrl($database), $tempFilePath);
 
-            $content = (new Decompress())->getAdapter()->decompress($sourcePath);
-            $fileSystem->remove($targetPath);
-            $fileSystem->dumpFile($targetPath, $content);
-            $fileSystem->remove($sourcePath);
+            $this->fileSystem->remove($realFilePath);
+            (new Extractor())->extract($tempFilePath, $realFilePath);
+            $this->fileSystem->remove($tempFilePath);
 
             $newVersion  = 'n/a';
             $newMetadata = $this->locationService->getDatabaseMetadata($database);
@@ -127,5 +132,19 @@ class GeoIpCommand extends Command
         }
 
         return [$identifier];
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private function validateMemoryLimit(string $memoryLimit): void
+    {
+        if (preg_match('/^(\d+)([MG])$/', $memoryLimit) === 1) {
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            sprintf('Invalid memory limit: %s', $memoryLimit)
+        );
     }
 }
