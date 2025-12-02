@@ -22,6 +22,10 @@ city: n/a -> 2021-07-01 02:09:20
 country: n/a -> 2021-07-01 02:05:12
 ```
 
-Get help for this command by running `php bin/cli.php help geoip:synchronize`.
+Get help for this command by running:
+
+```shell
+php bin/cli.php geoip:synchronize --help
+```
 
 > If you set up the synchronizer command as a cronjob, you can add the `-q|--quiet` option, and it will output data only if an error has occurred.

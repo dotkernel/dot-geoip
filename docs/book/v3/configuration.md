@@ -11,5 +11,5 @@ Dot\GeoIP\ConfigProvider::class,
 Register the library's synchronizer command by adding the following line to your application's `config/autoload/cli.global.php` file under the `commands` array key:
 
 ```php
-Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpCommand::class,
+\Dot\GeoIP\Command\GeoIpCommand::$defaultName => \Dot\GeoIP\Command\GeoIpCommand::class,
 ```

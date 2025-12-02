@@ -9,8 +9,6 @@ use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
 use DotTest\GeoIP\CommonTrait;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
-use MaxMind\Db\Reader\InvalidDatabaseException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,29 +31,28 @@ class GeoIpCommandTest extends TestCase
     }
 
     /**
-     * @throws GuzzleException
-     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @throws Exception
      */
     public function testExecuteCommandWillCreateDatabaseFile(): void
     {
         $input  = $this->createMock(InputInterface::class);
         $output = $this->createMock(OutputInterface::class);
 
-        $input->expects($this->once())
-            ->method('getOption')
-            ->with('database')
-            ->willReturn(
-                LocationService::DATABASE_ASN
-            );
+        $input->method('getOption')->willReturnMap([
+            ['memory-limit', '256M'],
+            ['database', LocationService::DATABASE_ASN],
+        ]);
 
         $locationService = new LocationService($this->getConfig());
         $command         = new GeoIpCommand($locationService);
         $command->execute($input, $output);
-        $this->assertFileExists($locationService->getDatabasePath(LocationService::DATABASE_ASN));
+        $this->assertFileExists($locationService->getRealFilePath(LocationService::DATABASE_ASN));
     }
 
     /**
      * @throws \PHPUnit\Framework\MockObject\Exception
+     * @throws Exception
      */
     public function testWillIdentifyValidDatabases(): void
     {

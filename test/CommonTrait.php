@@ -8,6 +8,7 @@ use Dot\GeoIP\Service\LocationService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
+use function date;
 use function file_get_contents;
 use function sprintf;
 
@@ -66,17 +67,32 @@ trait CommonTrait
 
     protected function generateConfig(string $targetDir): array
     {
+        $year  = date('Y');
+        $month = date('m');
+
         return [
             'targetDir' => $targetDir,
             'databases' => [
                 LocationService::DATABASE_ASN     => [
-                    'source' => 'https://download.db-ip.com/free/dbip-asn-lite-{year}-{month}.mmdb.gz',
+                    'source' => sprintf(
+                        'https://download.db-ip.com/free/dbip-asn-lite-%d-%d.mmdb.gz',
+                        $year,
+                        $month
+                    ),
                 ],
                 LocationService::DATABASE_CITY    => [
-                    'source' => 'https://download.db-ip.com/free/dbip-city-lite-{year}-{month}.mmdb.gz',
+                    'source' => sprintf(
+                        'https://download.db-ip.com/free/dbip-city-lite-%d-%d.mmdb.gz',
+                        $year,
+                        $month
+                    ),
                 ],
                 LocationService::DATABASE_COUNTRY => [
-                    'source' => 'https://download.db-ip.com/free/dbip-country-lite-{year}-{month}.mmdb.gz',
+                    'source' => sprintf(
+                        'https://download.db-ip.com/free/dbip-country-lite-%d-%d.mmdb.gz',
+                        $year,
+                        $month
+                    ),
                 ],
             ],
         ];

@@ -8,21 +8,12 @@ use Laminas\Stdlib\ArraySerializableInterface;
 
 class CountryData implements ArraySerializableInterface
 {
-    protected ?bool $isEuMember;
-    protected ?string $isoCode;
-    protected ?string $name;
-    protected ?string $error;
-
     public function __construct(
-        ?bool $isEuMember = false,
-        ?string $isoCode = null,
-        ?string $name = null,
-        ?string $error = null
+        private ?bool $isEuMember = false,
+        private ?string $isoCode = null,
+        private ?string $name = null,
+        private ?string $error = null,
     ) {
-        $this->isEuMember = $isEuMember;
-        $this->isoCode    = $isoCode;
-        $this->name       = $name;
-        $this->error      = $error;
     }
 
     public function getIsEuMember(): ?bool

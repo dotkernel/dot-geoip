@@ -30,7 +30,8 @@ class LocationServiceTest extends TestCase
     use CommonTrait;
 
     /**
-     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
+     * @throws InvalidDatabaseException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testAccessors(): void
     {
@@ -192,20 +193,17 @@ class LocationServiceTest extends TestCase
     public function testGetDatabasePath(): void
     {
         $locationService = new LocationService($this->getConfig());
-        $path            = $locationService->getDatabasePath(LocationService::DATABASE_ASN);
+        $path            = $locationService->getRealFilePath(LocationService::DATABASE_ASN);
         $this->assertSame(
             sprintf('%s/%s.mmdb', $this->getConfig()['targetDir'], LocationService::DATABASE_ASN),
             $path
         );
     }
 
-    /**
-     * @throws InvalidDatabaseException
-     */
     public function testGetDatabaseSource(): void
     {
         $locationService = new LocationService($this->getConfig());
-        $source          = $locationService->getDatabaseSource(LocationService::DATABASE_ASN);
+        $source          = $locationService->getTempFilePath(LocationService::DATABASE_ASN);
         $this->assertSame(
             sprintf(
                 '%s/%s',
@@ -246,7 +244,8 @@ class LocationServiceTest extends TestCase
 
     /**
      * @throws AddressNotFoundException
-     * @throws InvalidDatabaseException|\PHPUnit\Framework\MockObject\Exception
+     * @throws InvalidDatabaseException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testGetLocation(): void
     {

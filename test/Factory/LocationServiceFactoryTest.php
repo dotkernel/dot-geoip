@@ -19,7 +19,8 @@ class LocationServiceFactoryTest extends TestCase
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface|Exception
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
      */
     public function testCreateService(): void
     {
