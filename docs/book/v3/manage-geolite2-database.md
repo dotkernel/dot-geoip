@@ -29,3 +29,14 @@ php bin/cli.php geoip:synchronize --help
 ```
 
 > If you set up the synchronizer command as a cronjob, you can add the `-q|--quiet` option, and it will output data only if an error has occurred.
+
+## Memory limit
+
+By default, the synchronizer command will use up to 128MB of memory.
+If it happens to need more memory, you can increase the memory limit by providing the `memory-limit` option when calling the command:
+
+```shell
+php bin/cli.php geoip:synchronize --memory-limit 256M
+```
+
+You can specify the memory limit in the following formats: `128M`, `1G`, `1024M`, etc.
