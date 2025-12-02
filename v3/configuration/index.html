@@ -258,7 +258,7 @@
 <p>Register the library's ConfigProvider by adding the following line to your application's <code>config/config.php</code> file:</p>
 <pre class="highlight"><code class="language-php">Dot\GeoIP\ConfigProvider::class,</code></pre>
 <p>Register the library's synchronizer command by adding the following line to your application's <code>config/autoload/cli.global.php</code> file under the <code>commands</code> array key:</p>
-<pre class="highlight"><code class="language-php">Dot\GeoIP\Command\GeoIpCommand::getDefaultName() =&gt; Dot\GeoIP\Command\GeoIpCommand::class,</code></pre>
+<pre class="highlight"><code class="language-php">\Dot\GeoIP\Command\GeoIpCommand::$defaultName =&gt; \Dot\GeoIP\Command\GeoIpCommand::class,</code></pre>
 
 
 

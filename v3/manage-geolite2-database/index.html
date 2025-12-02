@@ -240,6 +240,17 @@
 
     
     
+        <div class="toc">
+            <h6 class="toc__headline">On this page</h6>
+            <ul class="toc__list">
+            
+                <li class="toc__entry">
+                    <a href="#memory-limit" class="toc__link nav-link">Memory limit</a>
+                </li>
+            
+            </ul>
+        </div>
+    
 
                     
                 </div>
@@ -263,10 +274,16 @@
 <pre class="highlight"><code class="language-text">asn: n/a -&gt; 2021-07-01 02:09:34
 city: n/a -&gt; 2021-07-01 02:09:20
 country: n/a -&gt; 2021-07-01 02:05:12</code></pre>
-<p>Get help for this command by running <code>php bin/cli.php help geoip:synchronize</code>.</p>
+<p>Get help for this command by running:</p>
+<pre class="highlight"><code class="language-shell">php bin/cli.php geoip:synchronize --help</code></pre>
 <blockquote>
 <p>If you set up the synchronizer command as a cronjob, you can add the <code>-q|--quiet</code> option, and it will output data only if an error has occurred.</p>
 </blockquote>
+<h2 id="memory-limit">Memory limit</h2>
+<p>By default, the synchronizer command will use up to 128MB of memory.
+If it happens to need more memory, you can increase the memory limit by providing the <code>memory-limit</code> option when calling the command:</p>
+<pre class="highlight"><code class="language-shell">php bin/cli.php geoip:synchronize --memory-limit 256M</code></pre>
+<p>You can specify the memory limit in the following formats: <code>128M</code>, <code>1G</code>, <code>1024M</code>, etc.</p>
 
 
 

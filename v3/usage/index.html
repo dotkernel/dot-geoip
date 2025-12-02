@@ -255,36 +255,13 @@
 
     <h1 id="usage">Usage</h1>
 <p>Below is an example implementation of using DotGeoip to retrieve information about an IP address.</p>
-<pre class="highlight"><code class="language-php">&lt;?php
-
-declare(strict_types=1);
-
-namespace Api\Example\Service;
-
-use Dot\GeoIP\Service\LocationServiceInterface;
-use Throwable;
-
-/**
- * Class ExampleService
- * @package Api\Example\Service
- */
-class ExampleService
+<pre class="highlight"><code class="language-php">class ExampleService
 {
-    protected LocationServiceInterface $locationService;
-
-    /**
-     * ExampleService constructor.
-     * @param LocationServiceInterface $locationService
-     */
-    public function __construct(LocationServiceInterface $locationService)
-    {
-        $this-&gt;locationService = $locationService;
+    public function __construct(
+        private \Dot\GeoIP\Service\LocationServiceInterface $locationService
+    ) {
     }
 
-    /**
-     * @param string $ipAddress
-     * @return object
-     */
     public function myMethod(string $ipAddress): object
     {
        return $this-&gt;locationService-&gt;getCountry($ipAddress); // Returns an instance of Dot\GeoIP\Data\CountryData
