@@ -7,50 +7,29 @@ namespace DotTest\GeoIP;
 use Dot\GeoIP\Service\LocationService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use RuntimeException;
 
 use function date;
 use function file_get_contents;
 use function sprintf;
 
+/**
+ * @phpstan-import-type GeoIpConfig from LocationService
+ */
 trait CommonTrait
 {
-    protected vfsStreamDirectory $fileSystem;
-    protected array $config   = [];
-    protected array $defaults = [
-        'continent'    => [
-            'code'  => 'code',
-            'name'  => 'name',
-            'error' => 'error',
-        ],
-        'country'      => [
-            'isEuMember' => false,
-            'isoCode'    => 'isoCode',
-            'name'       => 'name',
-            'error'      => 'error',
-        ],
-        'organization' => [
-            'asn'   => 123456,
-            'name'  => 'name',
-            'error' => 'error',
-        ],
-        'city'         => [
-            'name'  => 'name',
-            'error' => 'error',
-        ],
-        'latitude'     => 12.34,
-        'longitude'    => 12.34,
-        'timeZone'     => 'timeZone',
-    ];
+    use DefaultsTrait;
 
-    protected function setup(): void
+    protected vfsStreamDirectory $fileSystem;
+    /** @var GeoIpConfig */
+    protected array $config;
+
+    protected function setUp(): void
     {
-        $sampleData       = $this->getSampleData();
         $this->fileSystem = vfsStream::setup('root', 0644, [
             'data' => [
                 'geoip' => [
-                    sprintf('%s.mmdb', LocationService::DATABASE_ASN)     => $sampleData,
-                    sprintf('%s.mmdb', LocationService::DATABASE_CITY)    => $sampleData,
-                    sprintf('%s.mmdb', LocationService::DATABASE_COUNTRY) => $sampleData,
+                    sprintf('%s.mmdb', LocationService::DATABASE_ASN) => $this->getSampleData(),
                 ],
             ],
         ]);
@@ -60,11 +39,17 @@ trait CommonTrait
         );
     }
 
+    /**
+     * @return GeoIpConfig
+     */
     protected function getConfig(): array
     {
         return $this->config;
     }
 
+    /**
+     * @return GeoIpConfig
+     */
     protected function generateConfig(string $targetDir): array
     {
         $year  = date('Y');
@@ -74,22 +59,14 @@ trait CommonTrait
             'targetDir' => $targetDir,
             'databases' => [
                 LocationService::DATABASE_ASN     => [
-                    'source' => sprintf(
-                        'https://download.db-ip.com/free/dbip-asn-lite-%d-%d.mmdb.gz',
-                        $year,
-                        $month
-                    ),
+                    'source' => sprintf('https://download.db-ip.com/free/dbip-asn-lite-%s-%s.mmdb.gz', $year, $month),
                 ],
                 LocationService::DATABASE_CITY    => [
-                    'source' => sprintf(
-                        'https://download.db-ip.com/free/dbip-city-lite-%d-%d.mmdb.gz',
-                        $year,
-                        $month
-                    ),
+                    'source' => sprintf('https://download.db-ip.com/free/dbip-city-lite-%s-%s.mmdb.gz', $year, $month),
                 ],
                 LocationService::DATABASE_COUNTRY => [
                     'source' => sprintf(
-                        'https://download.db-ip.com/free/dbip-country-lite-%d-%d.mmdb.gz',
+                        'https://download.db-ip.com/free/dbip-country-lite-%s-%s.mmdb.gz',
                         $year,
                         $month
                     ),
@@ -98,10 +75,13 @@ trait CommonTrait
         ];
     }
 
-    protected function getSampleData(): bool|string
+    protected function getSampleData(): string
     {
-        return file_get_contents(
-            sprintf('%s/sample.mmdb', __DIR__)
-        );
+        $data = file_get_contents(sprintf('%s/sample.mmdb', __DIR__));
+        if ($data === false) {
+            throw new RuntimeException('Cannot read the sample database.');
+        }
+
+        return $data;
     }
 }

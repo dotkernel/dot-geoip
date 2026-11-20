@@ -4,59 +4,34 @@ declare(strict_types=1);
 
 namespace DotTest\GeoIP\Factory;
 
-use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\Factory\AbstractFactory;
 use Dot\GeoIP\Factory\GeoIpCommandFactory;
+use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
 use DotTest\GeoIP\CommonTrait;
-use PHPUnit\Framework\MockObject\Exception;
+use DotTest\GeoIP\Fixture\Container;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 
 class GeoIpCommandFactoryTest extends TestCase
 {
     use CommonTrait;
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws Exception
-     * @throws NotFoundExceptionInterface
-     */
     public function testFactoryWillNotCreateCommandWithoutLocationService(): void
     {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $container->expects($this->once())
-            ->method('has')
-            ->with(LocationServiceInterface::class)
-            ->willReturn(false);
-
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(AbstractFactory::MESSAGE_MISSING_LOCATION_SERVICE);
-        (new GeoIpCommandFactory())($container);
+        (new GeoIpCommandFactory())(new Container([]));
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws Exception
-     * @throws NotFoundExceptionInterface
-     */
     public function testFactoryWillCreateCommand(): void
     {
-        $container       = $this->createMock(ContainerInterface::class);
-        $locationService = $this->createMock(LocationServiceInterface::class);
-
-        $container->expects($this->once())
-            ->method('has')
-            ->with(LocationServiceInterface::class)
-            ->willReturn(true);
-
-        $container->method('get')->willReturnMap([
-            [LocationServiceInterface::class, $locationService],
+        $container = new Container([
+            LocationServiceInterface::class => new LocationService($this->getConfig()),
         ]);
 
         $command = (new GeoIpCommandFactory())($container);
-        $this->assertContainsOnlyInstancesOf(GeoIpCommand::class, [$command]);
+
+        $this->assertSame('geoip:synchronize', $command->getName());
     }
 }

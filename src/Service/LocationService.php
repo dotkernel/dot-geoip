@@ -9,9 +9,9 @@ use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
-use Exception;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
+use InvalidArgumentException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 use Throwable;
@@ -26,7 +26,10 @@ use function filter_var;
 use function implode;
 use function rtrim;
 use function sprintf;
+use function str_contains;
 use function str_replace;
+use function strrpos;
+use function substr;
 use function sys_get_temp_dir;
 use function trim;
 
@@ -34,13 +37,23 @@ use const FILTER_FLAG_IPV4;
 use const FILTER_FLAG_IPV6;
 use const FILTER_VALIDATE_IP;
 
+/**
+ * @phpstan-type GeoIpConfig array{
+ *     targetDir: string,
+ *     databases: array<string, array{source: string}>
+ * }
+ */
 class LocationService implements LocationServiceInterface
 {
     public const DATABASE_ALL     = 'all';
     public const DATABASE_ASN     = 'asn';
     public const DATABASE_CITY    = 'city';
     public const DATABASE_COUNTRY = 'country';
-    public const DATABASES        = [
+    /**
+     * The keys are the database identifiers. The package uses only the keys.
+     * The local file of a database is "<targetDir>/<identifier>.mmdb".
+     */
+    public const DATABASES = [
         self::DATABASE_ASN     => 'GeoLite2-ASN.mmdb',
         self::DATABASE_CITY    => 'GeoLite2-City.mmdb',
         self::DATABASE_COUNTRY => 'GeoLite2-Country.mmdb',
@@ -49,13 +62,20 @@ class LocationService implements LocationServiceInterface
     protected ?Reader $countryReader = null;
     protected ?Reader $cityReader    = null;
     protected ?Reader $asnReader     = null;
-    protected array $config          = [];
+    /** @var GeoIpConfig */
+    protected array $config;
 
+    /**
+     * @param GeoIpConfig $config
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * @return GeoIpConfig
+     */
     public function getConfigs(): array
     {
         return $this->config;
@@ -187,10 +207,13 @@ class LocationService implements LocationServiceInterface
         return sprintf('%s/%s.mmdb', rtrim($this->config['targetDir'], '/'), $database);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getTempFilePath(string $database): string
     {
         return $this->parsePlaceholders(
-            sprintf('%s/%s', sys_get_temp_dir(), basename($this->config['databases'][$database]['source']))
+            sprintf('%s/%s', sys_get_temp_dir(), basename($this->getDatabaseSource($database)))
         );
     }
 
@@ -205,19 +228,15 @@ class LocationService implements LocationServiceInterface
     }
 
     /**
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getDatabaseSourceUrl(string $database): string
     {
-        if (! array_key_exists($database, $this->config['databases'])) {
-            throw new Exception('Database source URL not found');
-        }
-
-        return $this->parsePlaceholders($this->config['databases'][$database]['source']);
+        return $this->parsePlaceholders($this->getDatabaseSource($database));
     }
 
     /**
-     * @throws Exception
+     * @throws InvalidArgumentException
      * @throws AddressNotFoundException
      * @throws InvalidDatabaseException
      */
@@ -225,29 +244,18 @@ class LocationService implements LocationServiceInterface
     {
         $ipAddress = $this->obfuscateIpAddress($ipAddress);
 
-        $cityData = $this->getCityReader()->city($ipAddress);
-
-        $continent = $this->getContinent($ipAddress);
-
-        $country = $this->getCountry($ipAddress);
-
-        $city = $this->getCity($ipAddress);
-
-        $organization = $this->getOrganization($ipAddress);
+        $cityModel = $this->getCityReader()->city($ipAddress);
 
         return (new LocationData())
-            ->setContinent($continent)
-            ->setCountry($country)
-            ->setCity($city)
-            ->setLatitude($cityData->location->latitude)
-            ->setLongitude($cityData->location->longitude)
-            ->setOrganization($organization)
-            ->setTimeZone($cityData->location->timeZone);
+            ->setContinent($this->getContinent($ipAddress))
+            ->setCountry($this->getCountry($ipAddress))
+            ->setCity(new CityData($cityModel->city->name))
+            ->setLatitude($cityModel->location->latitude)
+            ->setLongitude($cityModel->location->longitude)
+            ->setOrganization($this->getOrganization($ipAddress))
+            ->setTimeZone($cityModel->location->timeZone);
     }
 
-    /**
-     * @throws Exception
-     */
     public function getOrganization(string $ipAddress): OrganizationData
     {
         $organizationData = new OrganizationData();
@@ -263,16 +271,24 @@ class LocationService implements LocationServiceInterface
     }
 
     /**
-     * @throws Exception
+     * Set the last part of the IP address to zero.
+     * For an IPv4-mapped IPv6 address, set the last part of the IPv4 address to zero.
+     *
+     * @throws InvalidArgumentException
      */
     public function obfuscateIpAddress(string $ipAddress): string
     {
         if (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $separator = '.';
         } elseif (filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $position = strrpos($ipAddress, ':');
+            if ($position !== false && str_contains($ipAddress, '.')) {
+                return substr($ipAddress, 0, $position + 1)
+                    . $this->obfuscateIpAddress(substr($ipAddress, $position + 1));
+            }
             $separator = ':';
         } else {
-            throw new Exception('Invalid IP address: ' . $ipAddress);
+            throw new InvalidArgumentException('Invalid IP address: ' . $ipAddress);
         }
 
         $parts = explode($separator, $ipAddress);
@@ -280,6 +296,18 @@ class LocationService implements LocationServiceInterface
         $parts[] = '0';
 
         return implode($separator, $parts);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private function getDatabaseSource(string $database): string
+    {
+        if (! array_key_exists($database, $this->config['databases'])) {
+            throw new InvalidArgumentException('Database source URL not found');
+        }
+
+        return $this->config['databases'][$database]['source'];
     }
 
     private function parsePlaceholders(string $subject): string

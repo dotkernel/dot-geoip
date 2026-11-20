@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace DotTest\GeoIP\Data;
 
 use Dot\GeoIP\Data\OrganizationData;
-use DotTest\GeoIP\CommonTrait;
+use DotTest\GeoIP\DefaultsTrait;
 use PHPUnit\Framework\TestCase;
 
 class OrganizationDataTest extends TestCase
 {
-    use CommonTrait;
+    use DefaultsTrait;
 
     public function testDefaultValues(): void
     {
@@ -24,20 +24,16 @@ class OrganizationDataTest extends TestCase
     {
         $organizationData = new OrganizationData();
         $organizationData->setAsn($this->defaults['organization']['asn']);
-        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getAsn(), $this->defaults['organization']['asn']);
         $organizationData->setName($this->defaults['organization']['name']);
-        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
         $organizationData->setError($this->defaults['organization']['error']);
-        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
     }
 
     public function testExchangeArray(): void
     {
         $organizationData = (new OrganizationData())->exchangeArray($this->defaults['organization']);
-        $this->assertContainsOnlyInstancesOf(OrganizationData::class, [$organizationData]);
         $this->assertSame($organizationData->getAsn(), $this->defaults['organization']['asn']);
         $this->assertSame($organizationData->getName(), $this->defaults['organization']['name']);
         $this->assertSame($organizationData->getError(), $this->defaults['organization']['error']);
@@ -52,6 +48,6 @@ class OrganizationDataTest extends TestCase
         $this->assertArrayHasKey('name', $organizationData);
         $this->assertSame($organizationData['name'], $this->defaults['organization']['name']);
         $this->assertArrayHasKey('error', $organizationData);
-        $this->assertSame('error', $this->defaults['organization']['error']);
+        $this->assertSame($this->defaults['organization']['error'], $organizationData['error']);
     }
 }

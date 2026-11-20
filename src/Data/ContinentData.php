@@ -50,6 +50,9 @@ class ContinentData implements ArraySerializableInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $array
+     */
     public function exchangeArray(array $array): self
     {
         return $this
@@ -58,6 +61,9 @@ class ContinentData implements ArraySerializableInterface
             ->setError($array['error'] ?? null);
     }
 
+    /**
+     * @return array{code: ?string, name: ?string, error: ?string}
+     */
     public function getArrayCopy(): array
     {
         return [

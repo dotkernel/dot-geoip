@@ -9,12 +9,20 @@ use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
-use Exception;
 use GeoIp2\Database\Reader;
+use GeoIp2\Exception\AddressNotFoundException;
+use InvalidArgumentException;
+use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
 
+/**
+ * @phpstan-import-type GeoIpConfig from LocationService
+ */
 interface LocationServiceInterface
 {
+    /**
+     * @return GeoIpConfig
+     */
     public function getConfigs(): array;
 
     public function getConfig(string $name): mixed;
@@ -31,18 +39,34 @@ interface LocationServiceInterface
 
     public function getRealFilePath(string $database): string;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getTempFilePath(string $database): string;
 
+    /**
+     * @throws InvalidDatabaseException
+     */
     public function getDatabaseReader(string $database): Reader;
 
     /**
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getDatabaseSourceUrl(string $database): string;
 
+    /**
+     * Unlike the other lookup methods, this method throws when the lookup fails.
+     *
+     * @throws InvalidArgumentException
+     * @throws AddressNotFoundException
+     * @throws InvalidDatabaseException
+     */
     public function getLocation(string $ipAddress): LocationData;
 
     public function getOrganization(string $ipAddress): OrganizationData;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function obfuscateIpAddress(string $ipAddress): string;
 }

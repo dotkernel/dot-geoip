@@ -8,48 +8,59 @@ Dotkernel component to provide geographical details about an IP address
 
 Documentation is available at: https://docs.dotkernel.org/dot-geoip/.
 
+## Versions
+
+| Version | Branch | PHP versions |
+| --- | --- | --- |
+| 4.x | `4.0` | 8.3, 8.4, 8.5, 8.6 |
+| 3.x | `3.0` | 8.2, 8.3, 8.4, 8.5 |
+
+To upgrade from 3.x, read the [upgrade guide](https://docs.dotkernel.org/dot-geoip/v4/upgrading/).
+
 ## Badges
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/dotkernel/dot-geoip)
-![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.11.0)
+![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/4.0.0)
 
 [![GitHub issues](https://img.shields.io/github/issues/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/issues)
 [![GitHub forks](https://img.shields.io/github/forks/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/network)
 [![GitHub stars](https://img.shields.io/github/stars/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/stargazers)
-[![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.0/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/4.0/LICENSE)
 
-[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
+[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=4.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
 [![codecov](https://codecov.io/gh/dotkernel/dot-geoip/graph/badge.svg?token=K473P7MDZ4)](https://codecov.io/gh/dotkernel/dot-geoip)
-[![PHPStan](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
+[![PHPStan](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=4.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
 
 ## Install
 
-You can install this library by running the following command:
+Install this library by running the following command:
 
 ```shell
 composer require dotkernel/dot-geoip
 ```
 
-If your application didn't already use it, the above command also installed [dotkernel/dot-cli](https://github.com/dotkernel/dot-cli).
-In this case, see its [README](https://github.com/dotkernel/dot-cli/blob/3.0/README.md) file on how to use it.
+If your application does not use [dotkernel/dot-cli](https://github.com/dotkernel/dot-cli) yet, this command also installs it.
+In this case, read its [README](https://github.com/dotkernel/dot-cli/blob/3.0/README.md) file to learn how to use it.
 
-Copy config file `vendor/dotkernel/dot-geoip/config/autoload/geoip.global.php` into your application's `config/autoload` directory.
+Copy the config file `vendor/dotkernel/dot-geoip/config/autoload/geoip.global.php` into the `config/autoload` directory of your application.
 
-Register the library's ConfigProvider by adding the following line to your application's `config/config.php` file:
+Register the ConfigProvider of the library.
+Add the following line to the `config/config.php` file of your application:
 
 ```php
 Dot\GeoIP\ConfigProvider::class,
 ```
 
-Register the library's synchronizer command by adding the following line to your application's `config/autoload/cli.global.php` file under the `commands` array key:
+Register the synchronizer command of the library.
+Add the following line under the `commands` array key in the `config/autoload/cli.global.php` file of your application:
 
 ```php
-Dot\GeoIP\Command\GeoIpCommand::getDefaultName() => Dot\GeoIP\Command\GeoIpCommand::class,
+'geoip:synchronize' => Dot\GeoIP\Command\GeoIpCommand::class,
 ```
 
-## Manage GeoLite2 database
+## Manage the databases
 
-You can download/update a specific GeoLite2 database by running the following command:
+You can download or update one database by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize -d {DATABASE}
@@ -57,77 +68,62 @@ php ./bin/cli.php geoip:synchronize -d {DATABASE}
 
 Where _{DATABASE}_ takes one of the following values: `asn`, `city`, `country`.
 
-You can download/update all GeoLite2 databases at once by running the following command:
+You can download or update all the configured databases at once by running the following command:
 
 ```shell
 php ./bin/cli.php geoip:synchronize
 ```
 
-The output should be similar to the below, displaying per row: `database identifier`: `previous build datetime` -> `current build datetime`.
+For each database, the output shows the database identifier, the previous build date and the current build date:
 
 ```text
-asn: n/a -> 2021-07-01 02:09:34
-city: n/a -> 2021-07-01 02:09:20
-country: n/a -> 2021-07-01 02:05:12
+asn: n/a -> 2026-11-01 02:52:43
+city: n/a -> 2026-11-01 02:48:12
+country: n/a -> 2026-11-01 02:47:39
 ```
 
 Get help for this command by running `php ./bin/cli.php help geoip:synchronize`.
 
-> If you set up the synchronizer command as a cronjob, you can add the `-q|--quiet` option, and it will output data only if an error has occurred.
+If a download fails, the old database file stays unchanged and the command returns exit code `1`.
+If you run the command as a cron job, check its exit code.
 
 ## Usage
 
-Below is an example implementation of using DotGeoip to retrieve information about an IP address.
+Below is an example that uses dot-geoip to get information about an IP address.
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Api\Example\Service;
+namespace App\Example\Service;
 
+use Dot\GeoIP\Data\CountryData;
+use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Service\LocationServiceInterface;
-use Throwable;
 
-/**
- * Class ExampleService
- * @package Api\Example\Service
- */
 class ExampleService
 {
-    protected LocationServiceInterface $locationService;
-
-    /**
-     * ExampleService constructor.
-     * @param LocationServiceInterface $locationService
-     */
-    public function __construct(LocationServiceInterface $locationService)
-    {
-        $this->locationService = $locationService;
+    public function __construct(
+        private LocationServiceInterface $locationService,
+    ) {
     }
 
-    /**
-     * @param string $ipAddress
-     * @return object
-     */
-    public function myMethod(string $ipAddress): object
+    // Does not throw. On failure, the "error" property contains the message.
+    // getContinent(), getCity() and getOrganization() work the same way.
+    public function getCountry(string $ipAddress): CountryData
+    {
+        return $this->locationService->getCountry($ipAddress);
+    }
+
+    // Contains continent, country, city, organization, coordinates and time zone.
+    // Throws when the lookup fails.
+    public function getLocation(string $ipAddress): ?LocationData
     {
         try {
-            // You can use any of the below methods:
-            
-            // Get CountryData, which includes isEuMember, isoCode and name
-            return $this->locationService->getCountry($ipAddress);
-            
-            // Get ContinentData, which includes code and name
-            return $this->locationService->getContinent($ipAddress);
-            
-            // Get OrganizationData, which includes asn and name
-            return $this->locationService->getOrganization($ipAddress);
-
-            // Get LocationData, which includes all the above + estimated coordinates and timezone
             return $this->locationService->getLocation($ipAddress);
-        } catch (Throwable $exception) {
-            // handle errors
+        } catch (\Throwable) {
+            return null;
         }
     }
 }

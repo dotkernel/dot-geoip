@@ -6,34 +6,42 @@ namespace DotTest\GeoIP;
 
 use Dot\GeoIP\Command\GeoIpCommand;
 use Dot\GeoIP\ConfigProvider;
+use Dot\GeoIP\Factory\GeoIpCommandFactory;
+use Dot\GeoIP\Factory\LocationServiceFactory;
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @phpstan-import-type DependencyConfig from ConfigProvider
+ */
 class ConfigProviderTest extends TestCase
 {
+    /** @var array{dependencies: DependencyConfig} */
     protected array $config;
 
-    protected function setup(): void
+    protected function setUp(): void
     {
         $this->config = (new ConfigProvider())();
     }
 
-    public function testHasDependencies(): void
-    {
-        $this->assertArrayHasKey('dependencies', $this->config);
-    }
-
     public function testDependenciesHasFactories(): void
     {
-        $this->assertArrayHasKey('factories', $this->config['dependencies']);
-        $this->assertArrayHasKey(GeoIpCommand::class, $this->config['dependencies']['factories']);
-        $this->assertArrayHasKey(LocationService::class, $this->config['dependencies']['factories']);
+        $this->assertSame(
+            GeoIpCommandFactory::class,
+            $this->config['dependencies']['factories'][GeoIpCommand::class]
+        );
+        $this->assertSame(
+            LocationServiceFactory::class,
+            $this->config['dependencies']['factories'][LocationService::class]
+        );
     }
 
     public function testDependenciesHasAliases(): void
     {
-        $this->assertArrayHasKey('aliases', $this->config['dependencies']);
-        $this->assertArrayHasKey(LocationServiceInterface::class, $this->config['dependencies']['aliases']);
+        $this->assertSame(
+            LocationService::class,
+            $this->config['dependencies']['aliases'][LocationServiceInterface::class]
+        );
     }
 }

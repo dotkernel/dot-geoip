@@ -9,21 +9,32 @@ use Dot\GeoIP\Extractor;
 use Dot\GeoIP\FileSystem;
 use Dot\GeoIP\Service\LocationService;
 use Dot\GeoIP\Service\LocationServiceInterface;
-use Exception;
+use GeoIp2\Database\Reader;
 use InvalidArgumentException;
 use MaxMind\Db\Reader\Metadata;
+use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
+use function array_intersect;
 use function array_key_exists;
 use function array_keys;
+use function array_values;
 use function date;
+use function get_debug_type;
 use function implode;
+use function in_array;
 use function ini_set;
+use function is_array;
+use function is_int;
+use function is_string;
 use function preg_match;
+use function rename;
 use function sprintf;
 
 #[AsCommand(
@@ -44,11 +55,9 @@ class GeoIpCommand extends Command
         $this->fileSystem = new FileSystem();
     }
 
-    public function configure(): void
+    protected function configure(): void
     {
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Download latest version of GeoLite2-* database files.')
             ->addOption(
                 'database',
                 'd',
@@ -62,64 +71,76 @@ class GeoIpCommand extends Command
             ->addOption(
                 'memory-limit',
                 'm',
-                InputOption::VALUE_OPTIONAL,
-                'Memory limit for decompression. Examples: 256M, 1G',
+                InputOption::VALUE_REQUIRED,
+                'Memory limit for decompression. Examples: 256M, 1G, -1',
                 '128M'
             );
     }
 
     /**
-     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $memoryLimit = $input->getOption('memory-limit');
-        $this->validateMemoryLimit($memoryLimit);
-        ini_set('memory_limit', $memoryLimit);
+        $memoryLimit = $this->validateMemoryLimit($input->getOption('memory-limit'));
+        if (ini_set('memory_limit', $memoryLimit) === false) {
+            throw new RuntimeException(sprintf('Cannot set the memory limit to %s.', $memoryLimit));
+        }
 
         $this->fileSystem->mkdir($this->locationService->getConfig('targetDir'));
 
-        $database  = $input->getOption('database') ?? LocationService::DATABASE_ALL;
-        $databases = $this->identifyDatabases($database);
-        foreach ($databases as $database) {
-            $tempFilePath = $this->locationService->getTempFilePath($database);
+        $database = $input->getOption('database');
+        if (! is_string($database)) {
+            $database = LocationService::DATABASE_ALL;
+        }
+
+        $status = self::SUCCESS;
+        foreach ($this->identifyDatabases($database) as $database) {
             $realFilePath = $this->locationService->getRealFilePath($database);
+            $newFilePath  = $realFilePath . '.new';
+            $tempFilePath = $this->locationService->getTempFilePath($database);
+            $oldVersion   = $this->formatBuildDate($this->locationService->getDatabaseMetadata($database));
 
-            $oldVersion  = 'n/a';
-            $oldMetadata = $this->locationService->getDatabaseMetadata($database);
-            if ($oldMetadata instanceof Metadata) {
-                $oldVersion = date('Y-m-d H:i:s', $oldMetadata->buildEpoch);
+            try {
+                (new Client())->get($this->locationService->getDatabaseSourceUrl($database), $tempFilePath);
+                (new Extractor())->extract($tempFilePath, $newFilePath);
+                $this->validateDatabase($newFilePath);
+                if (! rename($newFilePath, $realFilePath)) {
+                    throw new RuntimeException(sprintf('Cannot replace "%s".', $realFilePath));
+                }
+            } catch (Throwable $exception) {
+                $this->getErrorOutput($output)->writeln(
+                    sprintf('<error>%s: %s</error>', $database, $exception->getMessage())
+                );
+                $status = self::FAILURE;
+                continue;
+            } finally {
+                $this->fileSystem->remove($tempFilePath);
+                $this->fileSystem->remove($newFilePath);
             }
 
-            (new Client())->get($this->locationService->getDatabaseSourceUrl($database), $tempFilePath);
-
-            $this->fileSystem->remove($realFilePath);
-            (new Extractor())->extract($tempFilePath, $realFilePath);
-            $this->fileSystem->remove($tempFilePath);
-
-            $newVersion  = 'n/a';
-            $newMetadata = $this->locationService->getDatabaseMetadata($database);
-            if ($newMetadata instanceof Metadata) {
-                $newVersion = date('Y-m-d H:i:s', $newMetadata->buildEpoch);
-            }
-
+            $newVersion = $this->formatBuildDate($this->locationService->getDatabaseMetadata($database));
             $output->writeln(sprintf("%s: %s -> %s", $database, $oldVersion, $newVersion));
         }
 
-        return self::SUCCESS;
+        return $status;
     }
 
     /**
-     * @throws Exception
+     * Return the identifiers of the databases to synchronize.
+     * The identifier "all" returns only the databases in the config.
+     *
+     * @return list<string>
+     * @throws InvalidArgumentException
      */
     public function identifyDatabases(string $identifier): array
     {
+        $databases  = $this->locationService->getConfig('databases');
+        $configured = is_array($databases) ? array_keys($databases) : [];
+
         if ($identifier === LocationService::DATABASE_ALL) {
-            return [
-                LocationService::DATABASE_ASN,
-                LocationService::DATABASE_CITY,
-                LocationService::DATABASE_COUNTRY,
-            ];
+            return array_values(array_intersect(array_keys(LocationService::DATABASES), $configured));
         }
 
         if (! array_key_exists($identifier, LocationService::DATABASES)) {
@@ -128,7 +149,11 @@ class GeoIpCommand extends Command
                 $identifier,
                 implode(', ', array_keys(LocationService::DATABASES))
             );
-            throw new Exception($message);
+            throw new InvalidArgumentException($message);
+        }
+
+        if (! in_array($identifier, $configured, true)) {
+            throw new InvalidArgumentException(sprintf('Database "%s" is not configured.', $identifier));
         }
 
         return [$identifier];
@@ -137,14 +162,40 @@ class GeoIpCommand extends Command
     /**
      * @throws InvalidArgumentException
      */
-    private function validateMemoryLimit(string $memoryLimit): void
+    private function validateMemoryLimit(mixed $memoryLimit): string
     {
-        if (preg_match('/^(\d+)([MG])$/', $memoryLimit) === 1) {
-            return;
+        if (is_string($memoryLimit) && preg_match('/^(-1|\d+[KMG]?)$/i', $memoryLimit) === 1) {
+            return $memoryLimit;
         }
 
         throw new InvalidArgumentException(
-            sprintf('Invalid memory limit: %s', $memoryLimit)
+            sprintf('Invalid memory limit: %s', is_string($memoryLimit) ? $memoryLimit : get_debug_type($memoryLimit))
         );
+    }
+
+    /**
+     * Open the file as a database, so that an invalid file never replaces the current database.
+     *
+     * @throws Throwable
+     */
+    private function validateDatabase(string $path): void
+    {
+        $reader = new Reader($path);
+        $reader->metadata();
+        $reader->close();
+    }
+
+    private function formatBuildDate(?Metadata $metadata): string
+    {
+        if ($metadata === null || ! is_int($metadata->buildEpoch)) {
+            return 'n/a';
+        }
+
+        return date('Y-m-d H:i:s', $metadata->buildEpoch);
+    }
+
+    private function getErrorOutput(OutputInterface $output): OutputInterface
+    {
+        return $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
     }
 }

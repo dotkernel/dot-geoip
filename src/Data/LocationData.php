@@ -6,6 +6,8 @@ namespace Dot\GeoIP\Data;
 
 use Laminas\Stdlib\ArraySerializableInterface;
 
+use function is_array;
+
 class LocationData implements ArraySerializableInterface
 {
     public function __construct(
@@ -123,28 +125,80 @@ class LocationData implements ArraySerializableInterface
         return $this;
     }
 
+    /**
+     * Accept the nested data as objects or as arrays, so that the output of getArrayCopy() is valid input.
+     *
+     * @param array<string, mixed> $array
+     */
     public function exchangeArray(array $array): self
     {
         return $this
-            ->setContinent($array['continent'] ?? null)
-            ->setCountry($array['country'] ?? null)
-            ->setCity($array['city'] ?? null)
-            ->setOrganization($array['organization'] ?? null)
+            ->setContinent($this->toContinent($array['continent'] ?? null))
+            ->setCountry($this->toCountry($array['country'] ?? null))
+            ->setCity($this->toCity($array['city'] ?? null))
+            ->setOrganization($this->toOrganization($array['organization'] ?? null))
             ->setLatitude($array['latitude'] ?? null)
             ->setLongitude($array['longitude'] ?? null)
             ->setTimeZone($array['timeZone'] ?? null);
     }
 
+    /**
+     * @return array{
+     *     continent: array{code: ?string, name: ?string, error: ?string}|array{},
+     *     country: array{isEuMember: ?bool, isoCode: ?string, name: ?string, error: ?string}|array{},
+     *     city: array{name: ?string, error: ?string}|array{},
+     *     organization: array{asn: ?int, name: ?string, error: ?string}|array{},
+     *     latitude: ?float,
+     *     longitude: ?float,
+     *     timeZone: ?string
+     * }
+     */
     public function getArrayCopy(): array
     {
         return [
-            'continent'    => $this->hasContinent() ? $this->getContinent()->getArrayCopy() : [],
-            'country'      => $this->hasCountry() ? $this->getCountry()->getArrayCopy() : [],
-            'city'         => $this->hasCity() ? $this->getCity()->getArrayCopy() : [],
-            'organization' => $this->hasOrganization() ? $this->getOrganization()->getArrayCopy() : [],
+            'continent'    => $this->continent?->getArrayCopy() ?? [],
+            'country'      => $this->country?->getArrayCopy() ?? [],
+            'city'         => $this->city?->getArrayCopy() ?? [],
+            'organization' => $this->organization?->getArrayCopy() ?? [],
             'latitude'     => $this->getLatitude(),
             'longitude'    => $this->getLongitude(),
             'timeZone'     => $this->getTimeZone(),
         ];
+    }
+
+    private function toContinent(mixed $value): ?ContinentData
+    {
+        return match (true) {
+            $value instanceof ContinentData => $value,
+            is_array($value) && $value !== [] => (new ContinentData())->exchangeArray($value),
+            default => null,
+        };
+    }
+
+    private function toCountry(mixed $value): ?CountryData
+    {
+        return match (true) {
+            $value instanceof CountryData => $value,
+            is_array($value) && $value !== [] => (new CountryData())->exchangeArray($value),
+            default => null,
+        };
+    }
+
+    private function toCity(mixed $value): ?CityData
+    {
+        return match (true) {
+            $value instanceof CityData => $value,
+            is_array($value) && $value !== [] => (new CityData())->exchangeArray($value),
+            default => null,
+        };
+    }
+
+    private function toOrganization(mixed $value): ?OrganizationData
+    {
+        return match (true) {
+            $value instanceof OrganizationData => $value,
+            is_array($value) && $value !== [] => (new OrganizationData())->exchangeArray($value),
+            default => null,
+        };
     }
 }
