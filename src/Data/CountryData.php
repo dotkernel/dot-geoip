@@ -63,15 +63,21 @@ class CountryData implements ArraySerializableInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $array
+     */
     public function exchangeArray(array $array): self
     {
         return $this
-            ->setIsEuMember($array['isEuMember'] ?? null)
+            ->setIsEuMember($array['isEuMember'] ?? false)
             ->setIsoCode($array['isoCode'] ?? null)
             ->setName($array['name'] ?? null)
             ->setError($array['error'] ?? null);
     }
 
+    /**
+     * @return array{isEuMember: ?bool, isoCode: ?string, name: ?string, error: ?string}
+     */
     public function getArrayCopy(): array
     {
         return [

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dot\GeoIP\Factory;
 
 use Dot\GeoIP\Service\LocationService;
-use Exception;
+use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -15,7 +15,7 @@ class LocationServiceFactory extends AbstractFactory
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function __invoke(ContainerInterface $container): LocationService
     {

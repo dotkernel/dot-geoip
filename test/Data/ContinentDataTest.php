@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace DotTest\GeoIP\Data;
 
 use Dot\GeoIP\Data\ContinentData;
-use DotTest\GeoIP\CommonTrait;
+use DotTest\GeoIP\DefaultsTrait;
 use PHPUnit\Framework\TestCase;
 
 class ContinentDataTest extends TestCase
 {
-    use CommonTrait;
+    use DefaultsTrait;
 
     public function testDefaultValues(): void
     {
@@ -24,20 +24,16 @@ class ContinentDataTest extends TestCase
     {
         $continentData = new ContinentData();
         $continentData->setCode($this->defaults['continent']['code']);
-        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getCode(), $this->defaults['continent']['code']);
         $continentData->setName($this->defaults['continent']['name']);
-        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
         $continentData->setError($this->defaults['continent']['error']);
-        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);
     }
 
     public function testExchangeArray(): void
     {
         $continentData = (new ContinentData())->exchangeArray($this->defaults['continent']);
-        $this->assertContainsOnlyInstancesOf(ContinentData::class, [$continentData]);
         $this->assertSame($continentData->getCode(), $this->defaults['continent']['code']);
         $this->assertSame($continentData->getName(), $this->defaults['continent']['name']);
         $this->assertSame($continentData->getError(), $this->defaults['continent']['error']);
@@ -52,6 +48,6 @@ class ContinentDataTest extends TestCase
         $this->assertArrayHasKey('name', $continentData);
         $this->assertSame($continentData['name'], $this->defaults['continent']['name']);
         $this->assertArrayHasKey('error', $continentData);
-        $this->assertSame('error', $this->defaults['continent']['error']);
+        $this->assertSame($this->defaults['continent']['error'], $continentData['error']);
     }
 }

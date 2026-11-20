@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dot\GeoIP\Factory;
 
 use Dot\GeoIP\Service\LocationService;
-use Exception;
+use InvalidArgumentException;
 
 use function array_key_exists;
 use function is_array;
@@ -21,12 +21,13 @@ abstract class AbstractFactory
     public const MESSAGE_MISSING_CONFIG_DATABASE   = 'Missing/invalid dot-geoip config database: %s';
 
     /**
-     * @throws Exception
+     * @param array<array-key, mixed> $config
+     * @throws InvalidArgumentException
      */
     protected function validateConfig(array $config): void
     {
         if (empty($config)) {
-            throw new Exception(static::MESSAGE_MISSING_CONFIG);
+            throw new InvalidArgumentException(static::MESSAGE_MISSING_CONFIG);
         }
 
         if (
@@ -34,7 +35,7 @@ abstract class AbstractFactory
             || ! is_string($config['targetDir'])
             || empty($config['targetDir'])
         ) {
-            throw new Exception(static::MESSAGE_MISSING_CONFIG_TARGET_DIR);
+            throw new InvalidArgumentException(static::MESSAGE_MISSING_CONFIG_TARGET_DIR);
         }
 
         if (
@@ -42,7 +43,7 @@ abstract class AbstractFactory
             || ! is_array($config['databases'])
             || empty($config['databases'])
         ) {
-            throw new Exception(static::MESSAGE_MISSING_CONFIG_DATABASES);
+            throw new InvalidArgumentException(static::MESSAGE_MISSING_CONFIG_DATABASES);
         }
 
         $found     = false;
@@ -59,18 +60,19 @@ abstract class AbstractFactory
             $found    = true;
             $dbConfig = $config['databases'][$database];
             if (
-                ! array_key_exists('source', $dbConfig)
+                ! is_array($dbConfig)
+                || ! array_key_exists('source', $dbConfig)
                 || ! is_string($dbConfig['source'])
                 || empty($dbConfig['source'])
             ) {
-                throw new Exception(
+                throw new InvalidArgumentException(
                     sprintf(static::MESSAGE_MISSING_CONFIG_DATABASE, $database)
                 );
             }
         }
 
         if (false === $found) {
-            throw new Exception(static::MESSAGE_MISSING_CONFIG_DATABASES);
+            throw new InvalidArgumentException(static::MESSAGE_MISSING_CONFIG_DATABASES);
         }
     }
 }

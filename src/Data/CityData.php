@@ -38,6 +38,9 @@ class CityData implements ArraySerializableInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $array
+     */
     public function exchangeArray(array $array): self
     {
         return ($this)
@@ -45,6 +48,9 @@ class CityData implements ArraySerializableInterface
             ->setError($array['error'] ?? null);
     }
 
+    /**
+     * @return array{name: ?string, error: ?string}
+     */
     public function getArrayCopy(): array
     {
         return [

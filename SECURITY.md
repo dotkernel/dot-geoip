@@ -4,6 +4,7 @@
 
 | Version | Supported          | PHP Version                                                                                                |
 |---------|--------------------|------------------------------------------------------------------------------------------------------------|
+| 4.x     | :white_check_mark: | ![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/4.0.0)  |
 | 3.x     | :white_check_mark: | ![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/dotkernel/dot-geoip/3.11.0) |
 | <= 2.x  | :x:                |                                                                                                            |
 

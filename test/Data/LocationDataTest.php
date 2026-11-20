@@ -9,12 +9,12 @@ use Dot\GeoIP\Data\ContinentData;
 use Dot\GeoIP\Data\CountryData;
 use Dot\GeoIP\Data\LocationData;
 use Dot\GeoIP\Data\OrganizationData;
-use DotTest\GeoIP\CommonTrait;
+use DotTest\GeoIP\DefaultsTrait;
 use PHPUnit\Framework\TestCase;
 
 class LocationDataTest extends TestCase
 {
-    use CommonTrait;
+    use DefaultsTrait;
 
     public function testDefaultValues(): void
     {
@@ -32,25 +32,18 @@ class LocationDataTest extends TestCase
     {
         $locationData = new LocationData();
         $locationData->setContinent(new ContinentData());
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
         $locationData->setCountry(new CountryData());
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
         $locationData->setCity(new CityData());
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(CityData::class, $locationData->getCity());
         $locationData->setOrganization(new OrganizationData());
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(OrganizationData::class, $locationData->getOrganization());
         $locationData->setLatitude($this->defaults['latitude']);
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getLatitude(), $this->defaults['latitude']);
         $locationData->setLongitude($this->defaults['longitude']);
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getLongitude(), $this->defaults['longitude']);
         $locationData->setTimeZone($this->defaults['timeZone']);
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertSame($locationData->getTimeZone(), $this->defaults['timeZone']);
     }
 
@@ -65,7 +58,6 @@ class LocationDataTest extends TestCase
             'longitude'    => $this->defaults['longitude'],
             'timeZone'     => $this->defaults['timeZone'],
         ]);
-        $this->assertContainsOnlyInstancesOf(LocationData::class, [$locationData]);
         $this->assertInstanceOf(ContinentData::class, $locationData->getContinent());
         $this->assertInstanceOf(CountryData::class, $locationData->getCountry());
         $this->assertInstanceOf(CityData::class, $locationData->getCity());
@@ -113,5 +105,36 @@ class LocationDataTest extends TestCase
         $this->assertSame($locationData['latitude'], $this->defaults['latitude']);
         $this->assertSame($locationData['longitude'], $this->defaults['longitude']);
         $this->assertSame($locationData['timeZone'], $this->defaults['timeZone']);
+    }
+
+    public function testExchangeArrayAcceptsOutputOfGetArrayCopy(): void
+    {
+        $locationData = (new LocationData())->exchangeArray([
+            'continent'    => (new ContinentData())->exchangeArray($this->defaults['continent']),
+            'country'      => (new CountryData())->exchangeArray($this->defaults['country']),
+            'city'         => (new CityData())->exchangeArray($this->defaults['city']),
+            'organization' => (new OrganizationData())->exchangeArray($this->defaults['organization']),
+            'latitude'     => $this->defaults['latitude'],
+            'longitude'    => $this->defaults['longitude'],
+            'timeZone'     => $this->defaults['timeZone'],
+        ]);
+
+        $copy = $locationData->getArrayCopy();
+        $this->assertSame($copy, (new LocationData())->exchangeArray($copy)->getArrayCopy());
+    }
+
+    public function testGetArrayCopyWithoutNestedDataGivesEmptyArrays(): void
+    {
+        $copy = (new LocationData())->getArrayCopy();
+        $this->assertSame([], $copy['continent']);
+        $this->assertSame([], $copy['country']);
+        $this->assertSame([], $copy['city']);
+        $this->assertSame([], $copy['organization']);
+
+        $locationData = (new LocationData())->exchangeArray($copy);
+        $this->assertNull($locationData->getContinent());
+        $this->assertNull($locationData->getCountry());
+        $this->assertNull($locationData->getCity());
+        $this->assertNull($locationData->getOrganization());
     }
 }

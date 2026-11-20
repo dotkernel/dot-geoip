@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace DotTest\GeoIP\Data;
 
 use Dot\GeoIP\Data\CityData;
-use DotTest\GeoIP\CommonTrait;
+use DotTest\GeoIP\DefaultsTrait;
 use PHPUnit\Framework\TestCase;
 
 class CityDataTest extends TestCase
 {
-    use CommonTrait;
+    use DefaultsTrait;
 
     public function testDefaultValues(): void
     {
@@ -19,26 +19,23 @@ class CityDataTest extends TestCase
         $this->assertNull($cityData->getError());
     }
 
-    public function testAccessors()
+    public function testAccessors(): void
     {
         $cityData = new CityData();
         $cityData->setName($this->defaults['city']['name']);
-        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getName(), $this->defaults['city']['name']);
         $cityData->setError($this->defaults['city']['error']);
-        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getError(), $this->defaults['city']['error']);
     }
 
-    public function testExchangeArray()
+    public function testExchangeArray(): void
     {
         $cityData = (new CityData())->exchangeArray($this->defaults['city']);
-        $this->assertContainsOnlyInstancesOf(CityData::class, [$cityData]);
         $this->assertSame($cityData->getName(), $this->defaults['city']['name']);
         $this->assertSame($cityData->getError(), $this->defaults['city']['error']);
     }
 
-    public function testGetArrayCopy()
+    public function testGetArrayCopy(): void
     {
         $cityData = (new CityData())->exchangeArray($this->defaults['city'])->getArrayCopy();
         $this->assertIsArray($cityData);
