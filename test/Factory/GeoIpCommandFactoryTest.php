@@ -45,7 +45,7 @@ class GeoIpCommandFactoryTest extends TestCase
     public function testFactoryWillCreateCommand(): void
     {
         $container       = $this->createMock(ContainerInterface::class);
-        $locationService = $this->createMock(LocationServiceInterface::class);
+        $locationService = $this->createStub(LocationServiceInterface::class);
 
         $container->expects($this->once())
             ->method('has')

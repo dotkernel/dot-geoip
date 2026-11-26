@@ -35,7 +35,7 @@ class LocationServiceTest extends TestCase
      */
     public function testAccessors(): void
     {
-        $readerService = $this->createMock(Reader::class);
+        $readerService = $this->createStub(Reader::class);
 
         $locationService = new LocationService($this->getConfig());
         $locationService->setCountryReader($readerService);
@@ -260,8 +260,8 @@ class LocationServiceTest extends TestCase
             'continent' => $this->defaults['continent'],
             'country'   => $this->defaults['country'],
         ]);
-        $asnReader  = $this->createMock(Reader::class);
-        $cityReader = $this->createMock(Reader::class);
+        $asnReader  = $this->createStub(Reader::class);
+        $cityReader = $this->createStub(Reader::class);
         $asnReader
             ->method('asn')
             ->willReturn($asnModel);
