@@ -24,7 +24,7 @@ class GeoIpCommandTest extends TestCase
      */
     public function testCreateCommand(): void
     {
-        $locationService = $this->createMock(LocationServiceInterface::class);
+        $locationService = $this->createStub(LocationServiceInterface::class);
 
         $command = new GeoIpCommand($locationService);
         $this->assertContainsOnlyInstancesOf(GeoIpCommand::class, [$command]);
@@ -36,8 +36,8 @@ class GeoIpCommandTest extends TestCase
      */
     public function testExecuteCommandWillCreateDatabaseFile(): void
     {
-        $input  = $this->createMock(InputInterface::class);
-        $output = $this->createMock(OutputInterface::class);
+        $input  = $this->createStub(InputInterface::class);
+        $output = $this->createStub(OutputInterface::class);
 
         $input->method('getOption')->willReturnMap([
             ['memory-limit', '256M'],
@@ -56,7 +56,7 @@ class GeoIpCommandTest extends TestCase
      */
     public function testWillIdentifyValidDatabases(): void
     {
-        $locationService = $this->createMock(LocationServiceInterface::class);
+        $locationService = $this->createStub(LocationServiceInterface::class);
 
         $command   = new GeoIpCommand($locationService);
         $databases = $command->identifyDatabases(LocationService::DATABASE_ASN);
@@ -75,7 +75,7 @@ class GeoIpCommandTest extends TestCase
      */
     public function testWillIdentifyInvalidDatabases(): void
     {
-        $locationService = $this->createMock(LocationServiceInterface::class);
+        $locationService = $this->createStub(LocationServiceInterface::class);
 
         $command = new GeoIpCommand($locationService);
         $this->expectException(Exception::class);

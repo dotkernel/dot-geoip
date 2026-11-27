@@ -14,6 +14,6 @@ Dotkernel component to provide geographical details about an IP address.
 [![GitHub stars](https://img.shields.io/github/stars/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/stargazers)
 [![GitHub license](https://img.shields.io/github/license/dotkernel/dot-geoip)](https://github.com/dotkernel/dot-geoip/blob/3.0/LICENSE)
 
-[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
+[![Build Static](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml/badge.svg?branch=3.x)](https://github.com/dotkernel/dot-geoip/actions/workflows/continuous-integration.yml)
 [![codecov](https://codecov.io/gh/dotkernel/dot-geoip/graph/badge.svg?token=K473P7MDZ4)](https://codecov.io/gh/dotkernel/dot-geoip)
-[![PHPStan](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.0)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
+[![PHPStan](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml/badge.svg?branch=3.x)](https://github.com/dotkernel/dot-geoip/actions/workflows/static-analysis.yml)
